@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+
+use strict; use warnings; use utf8;
+use feature qw/say switch/;
+
+my $input = join ' ', @ARGV;
+
+say normalize_input($input);
+
+sub normalize_input {
+    my $in = shift;
+    $in =~ s/\s//g;
+    return $in;
+}
+
