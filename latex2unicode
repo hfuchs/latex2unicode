@@ -3,13 +3,34 @@
 use strict; use warnings; use utf8;
 use feature qw/say switch/;
 
-my $input = join ' ', @ARGV;
+use Encode;
+use charnames ':full'; # "\N{WHITE SMILING FACE}";
+use Data::Dumper;
 
-say normalize_input($input);
+# -- main()
+# ----------------------------------------------------------------------
+
+my $input = decode_utf8 join ' ', @ARGV;
+
+say encode_utf8(substitute_chars(normalize_input($input)));
+
+# -- Subroutines
+# ----------------------------------------------------------------------
 
 sub normalize_input {
     my $in = shift;
     $in =~ s/\s//g;
+    return $in;
+}
+
+sub substitute_chars {
+    my $in = shift;
+    my %chars = (
+        'alpha' => "\x{03B1}",
+    );
+    while (my ($tex, $code) = each %chars) {
+        $in =~ s/\\$tex/$code/g;
+    }
     return $in;
 }
 
