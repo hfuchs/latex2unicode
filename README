@@ -1,0 +1,17 @@
+Docs:
+
+    perldoc perlunicode
+    http://en.wikipedia.org/wiki/Unicode_mathematical_operators
+
+Satan's Little Helper:
+
+    perl -e 'use utf8; use Data::Dumper; print Dumper("UNICODE_CHAR")'
+
+Test the repository:
+
+    cd /tmp
+    darcs get ~/data/projects/latex2unicode/
+    cd latex2unicode
+    chmod +x latex2unicode
+    perl test.pl
+
