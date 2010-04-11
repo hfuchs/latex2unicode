@@ -277,14 +277,14 @@ sub find_blocks {
 
             while (my $char = shift @$str) {
                 given ($char) {
-                    when (/\{/) { $depth++ }
+                    when (/\{/) {
+                        $block .= $char if ($depth > 0);
+                        $depth++;
+                    }
                     when (/\}/) {
                         $depth--;
-                        if ($depth < 0) {
-                            die "Weird block structure.";
-                        } elsif ($depth == 0) {
-                            last;
-                        }
+                        $block .= $char if ($depth > 0);
+                        last if ($depth == 0);
                     }
                     #when (is_primitive($_)) { $block = $char }
                     default { $block .= $char }
