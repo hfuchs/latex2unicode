@@ -1,0 +1,5 @@
+0.1
+    latex2unicode passes very simple tests.  Nevertheless, the
+    infra-structure has been set up and expansion should be rapid (if
+    not trivial :).  latex2unicode sports a very limited set of
+    character translations (see L2U/Constants.pm).
