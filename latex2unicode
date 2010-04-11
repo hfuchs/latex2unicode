@@ -226,7 +226,23 @@ sub handle {
                 $box = $exp;
             };
         }
-        when (/sub/) {
+        when (/sub/) {  # TODO Duplicates a lot of code from 'power'.
+            my $exp = find_blocks(1, $str);
+            if ( my $sub = is_subscriptable($exp) ) {
+                $box = {
+                    content => [ $sub ],
+                    width => 1,
+                    height => 1,
+                    foot => 0,
+                    head => 0,
+                };
+            } else {
+                unshift @{$exp->{content}}, " " x length($exp->{content}->[0]);
+                $exp->{foot} = $exp->{height};
+                $exp->{head} = 0;
+                $exp->{height}++;
+                $box = $exp;
+            };
         }
     }
     return $box;
