@@ -143,7 +143,39 @@ sub hpad {
     return 1;
 }
 
+# TODO Sorely lacking!  Primitive should be sth. like [:alnum:].
 sub is_primitive { return (shift =~ /(\\|\^|_)/ ? '' : 1) }
+
+sub is_unit_box {
+    my $box = shift;
+    return 1 if ($box->{width} * $box->{height} == 1);
+    return 0;
+}
+
+sub is_superscriptable {
+    my $box = shift;
+
+    return 0 unless (is_unit_box($box));
+
+    my $char = $box->{content}->[0];
+    my $superscripts = get_superscripts;
+    if (defined $superscripts->{$char}) {
+        return $superscripts->{$char};
+    } else {
+        return 0;
+    }
+}
+
+sub is_subscriptable {
+    my $box = shift;
+    my $char = $box->{content}->[0];
+    my $subscripts = get_subscripts;
+    if (defined $subscripts->{$char}) {
+        return $subscripts->{$char};
+    } else {
+        return 0;
+    }
+}
 
 sub process_macro {
     my $str = shift; # reference
@@ -177,8 +209,22 @@ sub handle {
             };
         }
         when (/power/) {
-            # TODO Shit breaks down here.
-            #my $cont = find_blocks(1, $str);
+            my $exp = find_blocks(1, $str);
+            if ( my $super = is_superscriptable($exp) ) {
+                $box = {
+                    content => [ $super ],
+                    width => 1,
+                    height => 1,
+                    foot => 0,
+                    head => 0,
+                };
+            } else {
+                push @{$exp->{content}}, " " x length($exp->{content}->[0]);
+                $exp->{head} = $exp->{height};
+                $exp->{foot} = 0;
+                $exp->{height}++;
+                $box = $exp;
+            };
         }
         when (/sub/) {
         }
