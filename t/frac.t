@@ -2,18 +2,18 @@ use strict; use warnings; use utf8;
 use feature qw/say switch/;
 
 use Test::More 'no_plan';
-#use Test::Exception;
 use Data::Dumper;
 use Encode;
 
 my $l2u    = './latex2unicode';
 
 my %good   = (
-    '1+1=2'           => "1+1=2",
-    '2  +1 =3'        => "2+1=3",
-    '\alpha'          => "α",
-    '2\cdot\Omega-7'  => "2·Ω-7",
-    '1\times2'        => "1×2",
+    # 2010-04-11, Can't do the following - get an untrackable "wide
+    # character in print" somewhere in the test routines.
+    #'\frac12'     => "1\n─\n2",
+    '\frac12'     => "1\n\x{2015}\n2",
+    '\frac{1}{2}'     => "1\n\x{2015}\n2",
+    '\frac{1}{12}'    => " 1\n" . "\x{2015}"x2 . "\n12",
 );
 
 while (my ($in, $out) = each %good) {
