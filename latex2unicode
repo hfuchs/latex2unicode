@@ -207,24 +207,7 @@ sub handle {
         when (/vec/)   { $box = handle_vec($str) }
         when (/frac/)  { $box = handle_frac($str) }
         when (/power/) { $box = handle_power($str, $stack) }
-        when (/sub/) {  # TODO Duplicates a lot of code from 'power'.
-            my $exp = find_blocks(1, $str);
-            if ( my $sub = is_subscriptable($exp) ) {
-                $box = {
-                    content => [ $sub ],
-                    width => 1,
-                    height => 1,
-                    foot => 0,
-                    head => 0,
-                };
-            } else {
-                unshift @{$exp->{content}}, " " x length($exp->{content}->[0]);
-                $exp->{foot} = $exp->{height};
-                $exp->{head} = 0;
-                $exp->{height}++;
-                $box = $exp;
-            };
-        }
+        when (/sub/)   { $box = handle_sub($str, $stack) }
         when (/int/) { $box = handle_int($str) }
         default      { die "Unknown command.  Can't handle." }
     }
@@ -261,6 +244,43 @@ sub handle_frac {
     };
     hpad($box);
 
+    return $box;
+}
+
+sub handle_sub {
+    # TODO Duplicates a lot of code from 'power'.
+    my $str = shift; #reference
+    my $stack = shift; #reference
+    D("> handle_sub [" . join('',@$str) . "]");
+    my ($min_head, $min_foot) = (0, 0);
+    my $box;
+
+    # First check which dimension the block before has - the index
+    # needs to take these into account.
+    if (not defined $stack->[-1]) {
+        say STDERR "No block before '_' sign?";
+    } else {
+        $min_head = $stack->[-1]->{head};
+        $min_foot = $stack->[-1]->{foot};
+    }
+
+    my $exp = find_blocks(1, $str);
+
+    if (my $sub = is_subscriptable($exp) and $min_head == 0) {
+        $box = {
+            content => [ $sub ],
+            width => 1, height => 1,
+            foot => 0, head => 0,
+        };
+    } else {
+        foreach my $i (0 .. $min_head+$min_foot) {
+            unshift @{$exp->{content}}, " " x length($exp->{content}->[0]);
+        }
+        $exp->{foot} = $min_foot + $exp->{height};
+        $exp->{head} = $min_head;
+        $exp->{height} = $exp->{foot} + $exp->{head} + 1;
+        $box = $exp;
+    };
     return $box;
 }
 
