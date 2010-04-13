@@ -10,6 +10,8 @@ use POSIX qw(floor);
 
 use L2U::Constants;
 
+my $DEBUG = 0;
+
 # -- main()
 # ----------------------------------------------------------------------
 
@@ -30,6 +32,7 @@ sub expand {
     # TODO Allow for arrays to be passed
     my @str = split //, shift;
     my @stack;
+    D("> expand [" . join('', @str). "]");
 
     while (@str) {
         given (shift @str) {
@@ -64,6 +67,7 @@ sub expand {
 }
 
 sub boxify {
+    D("> boxify");
     my @boxes = @_; # List of references.
 
     # Find the maximum box parameters for padding
@@ -99,6 +103,7 @@ sub boxify {
 }
 
 sub vpad {
+    D("> vpad");
     my $foot = shift;
     my $head = shift;
     my $box  = shift;  # Reference
@@ -260,9 +265,9 @@ sub handle_frac {
 }
 
 sub handle_power {
-    D("> handle_power");
     my $str = shift; #reference
     my $stack = shift; #reference
+    D("> handle_power [" . join('',@$str) . "]");
     my ($min_head, $min_foot) = (0, 0);
     my $box;
 
@@ -358,6 +363,7 @@ sub handle_int {
 sub find_blocks {
     my $count = shift;
     my $str   = shift;  # Reference.
+    D('> find_blocks [' . join('', @$str) . ']');
 
     # Call find_blocks recursive if more than one block need to be
     # found.
@@ -424,3 +430,9 @@ sub substitute_chars {
     return $in;
 }
 
+sub D {
+    if ($DEBUG) {
+        my $msg = shift;
+        print STDERR $msg . "\n";
+    }
+}
