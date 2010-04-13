@@ -53,11 +53,66 @@ sub expand {
             # an inconvenient (as seen from here) inversion of the macro
             # concept: their handlers need to know what block went
             # *before*.  TODO Are there more of these?
-            when (/\^/) {
-                push @stack, handle('power', \@str, \@stack);
-            }
-            when (/_/)  { # The sub-index sign is, too.
-                push @stack, handle('sub', \@str, \@stack);
+            when (/(_|\^)/) {
+                unshift @str, $_;
+
+                my ($upper, $lower) = find_limits(\@str);
+                # TODO The following lines become obsolete when
+                # find_limits() returns empty boxes.
+                $upper = make_empty_box() unless ($upper);
+                $lower = make_empty_box() unless ($lower);
+                #say STDERR Dumper($upper, $lower);
+
+                my ($min_head, $min_foot) = (0, 0);
+                if (not defined $stack[-1]) {
+                    say STDERR "No block before '^' sign?";
+                } else {
+                    $min_head = $stack[-1]->{head};
+                    $min_foot = $stack[-1]->{foot};
+                }
+                #say STDERR "mins: $min_head, $min_foot";
+
+                my $box;
+
+                if (my $super = is_superscriptable($upper) and
+                    $min_head == 0 and
+                    is_empty_box($lower)
+                ) {
+                    $box = {
+                        content => [ $super ],
+                        width   => 1,  height => 1,
+                        foot    => 0,  head    => 0,
+                    };
+                } elsif (
+                    my $sub = is_subscriptable($lower) and
+                    $min_foot == 0 and
+                    is_empty_box($upper)
+                    #$equation_is_simple
+                ) {
+                    $box = {
+                        content => [ $sub ],
+                        width => 1, height => 1,
+                        foot => 0, head => 0,
+                    };
+                } else {
+                    my $width = hpad('left-aligned', $upper, $lower);
+                    my @content = ();
+                    push @content, @{$upper->{content}};
+                    foreach my $i (0 .. $min_head+$min_foot) {
+                        push @content, " " x $width;
+                    }
+                    push @content, @{$lower->{content}};
+
+                    $box = {
+                        content => \@content,
+                        width   => $width,
+                        height  => scalar(@content),
+                        foot    => $min_foot + $lower->{height},
+                        head    => $min_head + $upper->{height},
+                    };
+                }
+
+                push @stack, $box;
             }
             default { die "New character class?!" }
         }
@@ -244,77 +299,6 @@ sub handle_frac {
     };
     hpad($box);
 
-    return $box;
-}
-
-sub handle_sub {
-    # TODO Duplicates a lot of code from 'power'.
-    my $str = shift; #reference
-    my $stack = shift; #reference
-    D("> handle_sub [" . join('',@$str) . "]");
-    my ($min_head, $min_foot) = (0, 0);
-    my $box;
-
-    # First check which dimension the block before has - the index
-    # needs to take these into account.
-    if (not defined $stack->[-1]) {
-        say STDERR "No block before '_' sign?";
-    } else {
-        $min_head = $stack->[-1]->{head};
-        $min_foot = $stack->[-1]->{foot};
-    }
-
-    my $exp = find_blocks(1, $str);
-
-    if (my $sub = is_subscriptable($exp) and $min_head == 0) {
-        $box = {
-            content => [ $sub ],
-            width => 1, height => 1,
-            foot => 0, head => 0,
-        };
-    } else {
-        foreach my $i (0 .. $min_head+$min_foot) {
-            unshift @{$exp->{content}}, " " x length($exp->{content}->[0]);
-        }
-        $exp->{foot} = $min_foot + $exp->{height};
-        $exp->{head} = $min_head;
-        $exp->{height} = $exp->{foot} + $exp->{head} + 1;
-        $box = $exp;
-    };
-    return $box;
-}
-
-sub handle_power {
-    my $str = shift; #reference
-    my $stack = shift; #reference
-    D("> handle_power [" . join('',@$str) . "]");
-    my ($min_head, $min_foot) = (0, 0);
-    my $box;
-
-    if (not defined $stack->[-1]) {
-        say STDERR "No block before '^' sign?";
-    } else {
-        $min_head = $stack->[-1]->{head};
-        $min_foot = $stack->[-1]->{foot};
-    }
-
-    my $exp = find_blocks(1, $str);
-    if (my $super = is_superscriptable($exp) and $min_head == 0)
-    {
-        $box = {
-            content => [ $super ],
-            width   => 1,  height  => 1,
-            foot    => 0,  head    => 0,
-        };
-    } else {
-        foreach my $i (0 .. $min_head+$min_foot) {
-            push @{$exp->{content}}, " " x length($exp->{content}->[0]);
-        }
-        $exp->{head} = $min_head + $exp->{height};
-        $exp->{foot} = $min_foot;
-        $exp->{height} = $exp->{head} + 1 + $min_foot;
-        $box = $exp;
-    };
     return $box;
 }
 
