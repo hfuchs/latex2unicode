@@ -12,6 +12,9 @@ my %good   = (
     '1^2'    => "1²",
     '1^{23}' => " 23\n1  ",
     '1^\omega' => " ω\n1 ",
+    'x^{12}^{21}^{42}' => "     42\n   21  \n 12    \nx      ",
+    # This one failed mysteriously (started with 'x¹}...').
+    'x^{10}^{21}^{42}' => "     42\n   21  \n 10    \nx      ",
 );
 
 while (my ($in, $out) = each %good) {
