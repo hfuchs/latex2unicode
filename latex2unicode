@@ -271,6 +271,9 @@ sub is_superscriptable {
 
 sub is_subscriptable {
     my $box = shift;
+
+    return 0 unless is_unit_box($box);
+
     my $char = $box->{content}->[0];
     my $subscripts = get_subscripts;
     if (defined $subscripts->{$char}) {
