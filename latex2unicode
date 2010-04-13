@@ -382,7 +382,8 @@ sub find_blocks {
             my $block = '';
             my $depth = 0;
 
-            while (my $char = shift @$str) {
+            while (scalar(@$str)) {
+                my $char = shift @$str;
                 given ($char) {
                     when (/\{/) {
                         $block .= $char if ($depth > 0);
