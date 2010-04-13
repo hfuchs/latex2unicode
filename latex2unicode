@@ -287,7 +287,7 @@ sub process_macro {
     my $str = shift; # reference
     my $cmd;
 
-    while ($str->[0] =~ /[a-zA-Z]/) {
+    while ($str->[0] =~ /[,a-zA-Z]/) {
         $cmd .= shift @$str;
     }
 
@@ -301,6 +301,8 @@ sub handle {
     my $box;
 
     given($cmd) {
+        when (/,/)   { $box = handle_comma($str) }
+        when (/bar/)   { $box = handle_bar($str) }
         when (/vec/)   { $box = handle_vec($str) }
         when (/frac/)  { $box = handle_frac($str) }
         when (/power/) { $box = handle_power($str, $stack) }
@@ -319,6 +321,27 @@ sub handle_vec {
     my $char = find_blocks(1, $str);
     $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
     return $char;
+}
+
+# TODO Create a generic accent-handler
+sub handle_bar {
+    D("> handle_bar");
+    my $str = shift;
+
+    # TODO Check for single character!
+    my $char = find_blocks(1, $str);
+    $char->{content}->[0] = $char->{content}->[0] . "\x{0305}";
+    return $char;
+}
+
+sub handle_comma {
+    D("> handle_comma");
+    my $str = shift;
+
+    my $box = make_empty_box();
+    $box->{content} = [' '];
+    $box->{width} = 1;
+    return $box;
 }
 
 sub handle_frac {
