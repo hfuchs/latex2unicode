@@ -52,6 +52,8 @@ my %chars = (
     # Operators
     'times' => "\x{d7}",
     'cdot'  => "\x{b7}",
+    # Signs
+    'infty' => "\x{221e}",
 );
 
 my %superscripts = (
