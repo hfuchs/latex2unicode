@@ -13,6 +13,9 @@ my %good   = (
     '1_{23}' => "1  \n 23",
     '1_\theta' => "1 \n θ",
     #'1_o'  should be subscripted, but doesn't work right now...
+    'x_{10}_{34}' => "x    \n 10  \n   34",
+    'x_{00}_{11}_{22}_{33}' =>
+    "x        \n 00      \n   11    \n     22  \n       33",
 );
 
 while (my ($in, $out) = each %good) {
