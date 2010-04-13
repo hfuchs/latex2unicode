@@ -448,7 +448,7 @@ sub find_blocks {
     } else {
         my $box;
 
-        if ($str->[0] !~ /(\{|\})/) {
+        if (defined $str->[0] and $str->[0] !~ /(\{|\})/) {
             $box = {
                 content => [ shift @$str ],
                 height  => 1,
