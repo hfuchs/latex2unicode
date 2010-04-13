@@ -304,6 +304,7 @@ sub handle {
         when (/,/)   { $box = handle_comma($str) }
         when (/bar/)   { $box = handle_bar($str) }
         when (/vec/)   { $box = handle_vec($str) }
+        when (/dot/)   { $box = handle_dot($str) }
         when (/frac/)  { $box = handle_frac($str) }
         when (/power/) { $box = handle_power($str, $stack) }
         when (/sub/)   { $box = handle_sub($str, $stack) }
@@ -311,6 +312,19 @@ sub handle {
         default      { die "Unknown command.  Can't handle." }
     }
     return $box;
+}
+
+sub handle_dot {
+    D("> handle_dot");
+    my $str = shift;
+
+    # TODO Check for single character!
+    my $char = find_blocks(1, $str);
+    # The 'dot' combining character, \x{0307}, *removes* other combining
+    # chars.
+    # \x{030a}: small circle,
+    $char->{content}->[0] = $char->{content}->[0] . "\x{030a}";
+    return $char;
 }
 
 sub handle_vec {
