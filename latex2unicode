@@ -121,6 +121,24 @@ sub expand {
     return boxify(@stack);
 }
 
+#sub look_ahead {
+#    my $str  = shift;
+#    my $char = shift;
+#
+#    return scalar(grep(/$char/, @$str));
+#}
+
+sub make_empty_box {
+    my $box = {
+        content => undef,
+        width   => 0,
+        height  => 0,
+        head    => 0,
+        foot    => 0
+    };
+    return $box;
+}
+
 sub boxify {
     D("> boxify");
     my @boxes = @_; # List of references.
@@ -224,6 +242,12 @@ sub hpad {
 
 # TODO Sorely lacking!  Primitive should be sth. like [:alnum:].
 sub is_primitive { return (shift =~ /(\\|\^|_)/ ? '' : 1) }
+
+sub is_empty_box {
+    my $box = shift;
+    return 1 if ($box->{width} + $box->{height} == 0);
+    return 0;
+}
 
 sub is_unit_box {
     my $box = shift;
