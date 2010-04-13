@@ -372,16 +372,19 @@ sub find_limits {
     my ($upper, $lower);
 
     foreach (0 .. 1) {
+        last unless @$str;
         given ($str->[0]) {
             when (/\^/) { # upper limit
+                last if (defined $upper);
                 shift @$str;
                 $upper = find_blocks(1, $str);
             }
             when (/_/)  { # lower limit
+                last if (defined $lower);
                 shift @$str;
                 $lower = find_blocks(1, $str);
             }
-            default { return undef }
+            default { return ($upper, $lower) } # TODO Return empty box?
         }
     }
 
