@@ -182,29 +182,44 @@ sub vpad {
 }
 
 sub hpad {
-    my @boxes = @_;  # References
+    my @boxes = @_;  # References (first argument might be a string).
     my $width = 1;   # Minimal box width.
+    my $align = "center";  # Standard alignment
+
+    # If the first argument is a string, it ought to be an alignment.
+    ref $boxes[0] ? 0 : ($align = shift @boxes);
 
     # Find maximum box width
     foreach my $box (@boxes) {
         $width < $box->{width} ? $width = $box->{width} : 0;
     }
 
+    # Pad each box according to the alignment description.
     foreach my $box (@boxes) {
-        my @content = @{$box->{content}};
-        foreach my $line (@content) {
-            my $pad = floor( ($width - length($line)) / 2);
-            $line = " "x$pad . $line . " "x$pad;
-            if ( $width - length($line) > 0 ) {
-                # Pad one extra to the left for odd lengths
-                $line = " $line";
+        foreach my $line (@{$box->{content}}) {
+            given ($align) {
+                when (/right/) { # Can be 'right', 'right-aligned', ...
+                    my $pad = $width - length($line);
+                    $line   = " "x$pad . $line;
+                }
+                when (/left/) {
+                    my $pad = $width - length($line);
+                    $line   = $line . " "x$pad;
+                }
+                default { # 'center' or whatever.
+                    my $pad = floor( ($width - length($line)) / 2);
+                    $line   = " "x$pad . $line . " "x$pad;
+                    if ( $width - length($line) > 0 ) {
+                        # Pad one extra to the left for odd lengths
+                        $line = " $line";
+                    }
+                }
             }
         }
-        $box->{content} = \@content;
         $box->{width} = $width;
     }
 
-    return 1;
+    return $width;
 }
 
 # TODO Sorely lacking!  Primitive should be sth. like [:alnum:].
