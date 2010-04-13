@@ -46,11 +46,15 @@ sub expand {
             when (/\\/) { # Encountered macro sign, find handler.
                 push @stack, process_macro(\@str);
             }
-            when (/\^/) { # The power sign is just a shorthand.
-                push @stack, handle('power', \@str);
+            # The power and subscript signs (exponents and indices) are
+            # an inconvenient (as seen from here) inversion of the macro
+            # concept: their handlers need to know what block went
+            # *before*.  TODO Are there more of these?
+            when (/\^/) {
+                push @stack, handle('power', \@str, \@stack);
             }
             when (/_/)  { # The sub-index sign is, too.
-                push @stack, handle('sub', \@str);
+                push @stack, handle('sub', \@str, \@stack);
             }
             default { die "New character class?!" }
         }
@@ -191,41 +195,13 @@ sub process_macro {
 sub handle {
     my $cmd = shift; # string
     my $str = shift; # reference
+    my $stack = shift; # optional reference
     my $box;
 
     given($cmd) {
-        when (/frac/) {
-            my ($num, $denom) = find_blocks(2, $str);
-            hpad($num, $denom);
-            my @frac = @{$num->{content}};
-            push @frac, "\x{2015}"x$num->{width};
-            push @frac, @{$denom->{content}};
-            $box = {
-                content => \@frac,
-                width   => length($frac[0]),
-                height  => $#frac + 1,
-                foot    => $denom->{height},
-                head    => $num->{height},
-            };
-        }
-        when (/power/) {
-            my $exp = find_blocks(1, $str);
-            if ( my $super = is_superscriptable($exp) ) {
-                $box = {
-                    content => [ $super ],
-                    width => 1,
-                    height => 1,
-                    foot => 0,
-                    head => 0,
-                };
-            } else {
-                push @{$exp->{content}}, " " x length($exp->{content}->[0]);
-                $exp->{head} = $exp->{height};
-                $exp->{foot} = 0;
-                $exp->{height}++;
-                $box = $exp;
-            };
-        }
+        when (/vec/)   { $box = handle_vec($str) }
+        when (/frac/)  { $box = handle_frac($str) }
+        when (/power/) { $box = handle_power($str, $stack) }
         when (/sub/) {  # TODO Duplicates a lot of code from 'power'.
             my $exp = find_blocks(1, $str);
             if ( my $sub = is_subscriptable($exp) ) {
@@ -244,10 +220,141 @@ sub handle {
                 $box = $exp;
             };
         }
+        when (/int/) { $box = handle_int($str) }
+        default      { die "Unknown command.  Can't handle." }
     }
     return $box;
 }
 
+sub handle_vec {
+    D("> handle_vec");
+    my $str = shift;
+
+    # TODO Check for single character!
+    my $char = find_blocks(1, $str);
+    $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
+    return $char;
+}
+
+sub handle_frac {
+    D("> handle_frac");
+    my $str = shift; # Reference
+    my $box;
+
+    my ($num, $denom) = find_blocks(2, $str);
+    hpad($num, $denom);
+    my @frac = @{$num->{content}};
+    push @frac, "\x{2015}"x($num->{width}+2);
+    push @frac, @{$denom->{content}};
+
+    $box = {
+        content => \@frac,
+        width   => length($frac[0])+2,
+        height  => $#frac + 1,
+        foot    => $denom->{height},
+        head    => $num->{height},
+    };
+    hpad($box);
+
+    return $box;
+}
+
+sub handle_power {
+    D("> handle_power");
+    my $str = shift; #reference
+    my $stack = shift; #reference
+    my ($min_head, $min_foot) = (0, 0);
+    my $box;
+
+    if (not defined $stack->[-1]) {
+        say STDERR "No block before '^' sign?";
+    } else {
+        $min_head = $stack->[-1]->{head};
+        $min_foot = $stack->[-1]->{foot};
+    }
+
+    my $exp = find_blocks(1, $str);
+    if (my $super = is_superscriptable($exp) and $min_head == 0)
+    {
+        $box = {
+            content => [ $super ],
+            width   => 1,  height  => 1,
+            foot    => 0,  head    => 0,
+        };
+    } else {
+        foreach my $i (0 .. $min_head+$min_foot) {
+            push @{$exp->{content}}, " " x length($exp->{content}->[0]);
+        }
+        $exp->{head} = $min_head + $exp->{height};
+        $exp->{foot} = $min_foot;
+        $exp->{height} = $exp->{head} + 1 + $min_foot;
+        $box = $exp;
+    };
+    return $box;
+}
+
+sub find_limits {
+    my $str = shift;
+    my ($upper, $lower);
+
+    foreach (0 .. 1) {
+        given ($str->[0]) {
+            when (/\^/) { # upper limit
+                shift @$str;
+                $upper = find_blocks(1, $str);
+            }
+            when (/_/)  { # lower limit
+                shift @$str;
+                $lower = find_blocks(1, $str);
+            }
+            default { return undef }
+        }
+    }
+
+    return ($upper, $lower);
+}
+
+sub handle_int {
+    D('> handle_int');
+    my $str             = shift;
+    my ($upper, $lower) = find_limits($str);
+    my $arg             = find_blocks(1, $str);
+
+    my @content;
+    my $intbox = {
+        width => 1,
+        height => $arg->{height},
+        head => $arg->{head},
+        foot => $arg->{foot},
+    };
+
+    if ($arg->{height} == 1) {
+        @content = ( "\x{222B}" );
+    } else {
+        push @content, "\x{256d}";
+        push @content, "\x{2502}" foreach (1 .. ($arg->{height}-2));
+        push @content, "\x{256f}";
+    }
+    $intbox->{content} = \@content;
+
+    # TODO Make a vboxify function from these lines.
+    if ($upper) {
+        hpad($upper, $intbox);
+        unshift @{$intbox->{content}}, @{$upper->{content}};
+        $intbox->{height} += $upper->{height};
+        $intbox->{head}   += $upper->{height};
+    }
+    if ($lower) {
+        hpad($lower, $intbox);
+        push @{$intbox->{content}}, @{$lower->{content}};
+        $intbox->{height} += $lower->{height};
+        $intbox->{foot}   += $lower->{height};
+    }
+
+    return boxify($intbox, $arg);
+}
+
+# TODO Reimplement as find_block, handle_frac could just call it twice.
 sub find_blocks {
     my $count = shift;
     my $str   = shift;  # Reference.
