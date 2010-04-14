@@ -1,3 +1,8 @@
+0.2
+    Handlers for \int, \frac, _ and ^ have been implemented.  A complete
+    set of greek character translations exists.  Nested blocks are
+    handled correctly now.  latex2unicode passes fairly complex tests
+    and bests BrightMare in some circumstances.
 0.1
     latex2unicode passes very simple tests.  Nevertheless, the
     infra-structure has been set up and expansion should be rapid (if
