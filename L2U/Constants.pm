@@ -54,6 +54,7 @@ my %chars = (
     'cdot'  => "\x{b7}",
     # Signs
     'infty' => "\x{221e}",
+    'propto' => "\x{221d}",
 );
 
 my %superscripts = (
