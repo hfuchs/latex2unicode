@@ -318,6 +318,7 @@ sub handle {
         when (/bar/)   { $box = handle_bar($str) }
         when (/vec/)   { $box = handle_vec($str) }
         when (/dot/)   { $box = handle_dot($str) }
+        when (/sqrt/)  { $box = handle_sqrt($str) }
         when (/frac/)  { $box = handle_frac($str) }
         when (/power/) { $box = handle_power($str, $stack) }
         when (/sub/)   { $box = handle_sub($str, $stack) }
@@ -348,6 +349,44 @@ sub handle_vec {
     my $char = find_blocks(1, $str);
     $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
     return $char;
+}
+
+sub handle_sqrt {
+    my $str = shift; # Reference
+    D("> handle_sqrt");
+    my $box;
+
+    # Gather the necessary information.
+    my $degree = find_option($str);
+    my $arg    = find_blocks(1, $str);
+
+    # Combose the degree-box
+    # TODO Handle one-line case (and degree 2, 3, 4)
+    $degree = make_unity_box('2') if is_empty_box($degree);
+    push @{$degree->{content}}, " " x ($degree->{width}-1) . "\x{2576}";
+    foreach (1 .. ($arg->{height} - 1)) {
+        unshift @{$degree->{content}}, " " x $degree->{width};
+    }
+    $degree->{height}  = $arg->{height} + 1;
+    $degree->{width}++;
+    $degree->{head}    = $arg->{head} + 1;
+    $degree->{foot}    = $arg->{foot};
+
+    # Compose the separator-box
+    my $sep = make_empty_box();
+    $sep->{content} = [ "\x{256d}" ];
+    push @{$sep->{content}}, "\x{2502}" foreach (1 .. ($arg->{height} - 1));
+    push @{$sep->{content}}, "\x{256f}";
+    $sep->{height}  = $arg->{height} + 1;
+    $sep->{width}++;
+    $sep->{head} = $arg->{head} + 1;
+    $sep->{foot} = $arg->{foot};
+
+    unshift @{$arg->{content}}, "\x{2500}" x $arg->{width};
+    $arg->{height}++;
+    $arg->{head}++;
+
+    return boxify($degree, $sep, $arg);
 }
 
 # TODO Create a generic accent-handler
@@ -507,6 +546,25 @@ sub find_blocks {
         }
 
         return $box;
+    }
+}
+
+sub find_option {
+#    my $count  = shift;
+    my $str    = shift;  # Reference.
+    my $string = join('', @$str);
+    D("> find_option [$string]");
+
+    if ( $string =~ /^\[(.*?)\](.*)$/ ) {
+        my $box = make_unity_box();
+
+        @$str = split(//, $2);
+        $box->{content}->[0] = $1;
+        $box->{width}        = length($1);
+
+        return $box; # TODO Check, that it's a simple number!
+    } else {
+        return make_empty_box();
     }
 }
 
