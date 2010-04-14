@@ -8,7 +8,7 @@ use Encode;
 my $l2u    = './latex2unicode';
 
 my %good   = (
-    #'x^2_3'    => " 2\nx \n 3",
+    'x^2_3'    => " 2\nx \n 3",
     '\frac12^3'      => "   3\n 1  \n――― \n 2  ",
     '\frac{\Omega^\theta\Gamma}{2^o}^3' =>
     "     3\n  θ   \n Ω Γ  \n――――― \n   o  \n  2   ",
