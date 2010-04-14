@@ -14,6 +14,7 @@ my %good   = (
     '\alpha'          => "α",
     '2\cdot\Omega-7'  => "2·Ω-7",
     '1\times2'        => "1×2",
+    '\propto\infty'   => "∝∞",
 );
 
 while (my ($in, $out) = each %good) {
