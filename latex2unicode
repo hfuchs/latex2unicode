@@ -333,7 +333,8 @@ sub handle_dot {
     my $str = shift;
 
     # TODO Check for single character!
-    my $char = find_blocks(1, $str);
+    my $char = find_block($str);
+    # TODO Not sure about the character choice here.
     # The 'dot' combining character, \x{0307}, *removes* other combining
     # chars.
     # \x{030a}: small circle,
@@ -346,7 +347,9 @@ sub handle_vec {
     my $str = shift;
 
     # TODO Check for single character!
-    my $char = find_blocks(1, $str);
+    my $char = find_block($str);
+    # Two alternatives, \x{0362}: arrow below, \x{20d7}: o⃗
+    # \x{20d1}: o⃑
     $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
     return $char;
 }
@@ -358,7 +361,7 @@ sub handle_sqrt {
 
     # Gather the necessary information.
     my $degree = find_option($str);
-    my $arg    = find_blocks(1, $str);
+    my $arg    = find_block($str);
 
     # Combose the degree-box
     # TODO Handle one-line case (and degree 2, 3, 4)
@@ -395,7 +398,7 @@ sub handle_bar {
     my $str = shift;
 
     # TODO Check for single character!
-    my $char = find_blocks(1, $str);
+    my $char = find_block($str);
     $char->{content}->[0] = $char->{content}->[0] . "\x{0305}";
     return $char;
 }
@@ -415,8 +418,10 @@ sub handle_frac {
     my $str = shift; # Reference
     my $box;
 
-    my ($num, $denom) = find_blocks(2, $str);
+    my $num   = find_block($str);
+    my $denom = find_block($str);
     hpad($num, $denom);
+
     my @frac = @{$num->{content}};
     push @frac, "\x{2015}"x($num->{width}+2);
     push @frac, @{$denom->{content}};
@@ -443,12 +448,12 @@ sub find_limits {
             when (/\^/) { # upper limit
                 last if (defined $upper);
                 shift @$str;
-                $upper = find_blocks(1, $str);
+                $upper = find_block($str);
             }
             when (/_/)  { # lower limit
                 last if (defined $lower);
                 shift @$str;
-                $lower = find_blocks(1, $str);
+                $lower = find_block($str);
             }
             default { return ($upper, $lower) } # TODO Return empty box?
         }
@@ -461,7 +466,7 @@ sub handle_int {
     D('> handle_int');
     my $str             = shift;
     my ($upper, $lower) = find_limits($str);
-    my $arg             = find_blocks(1, $str);
+    my $arg             = find_block($str);
 
     my @content;
     my $intbox = {
@@ -497,55 +502,36 @@ sub handle_int {
     return boxify($intbox, $arg);
 }
 
-# TODO Reimplement as find_block, handle_frac could just call it twice.
-sub find_blocks {
-    my $count = shift;
+sub find_block {
     my $str   = shift;  # Reference.
-    D('> find_blocks [' . join('', @$str) . ']');
+    D('> find_block [' . join('', @$str) . ']');
 
-    # Call find_blocks recursive if more than one block need to be
-    # found.
-    if ($count > 1) {
-        my @boxes;
-        while ($count > 0) {
-            $boxes[--$count] = find_blocks(1, $str);
-        }
-        return reverse @boxes;
-    } else {
-        my $box;
+    if (is_primitive($str->[0])) {
+        return make_unity_box(shift @$str);
+    } elsif (@$str and $str->[0] =~ /\\/) {   # TODO Create is_macro().
+        shift @$str;
+        return process_macro($str); # TODO Could test whether '\' exists.
+    } else { # Real block begins
+        my $block = '';
+        my $depth = 0;
 
-        if (defined $str->[0] and $str->[0] !~ /(\{|\})/) {
-            $box = {
-                content => [ shift @$str ],
-                height  => 1,
-                width   => 1,
-                foot    => 0,
-                head    => 0,
-            };
-        } else { # Real block begins
-            my $block = '';
-            my $depth = 0;
-
-            while (scalar(@$str)) {
-                my $char = shift @$str;
-                given ($char) {
-                    when (/\{/) {
-                        $block .= $char if ($depth > 0);
-                        $depth++;
-                    }
-                    when (/\}/) {
-                        $depth--;
-                        $block .= $char if ($depth > 0);
-                        last if ($depth == 0);
-                    }
-                    #when (is_primitive($_)) { $block = $char }
-                    default { $block .= $char }
+        while (scalar(@$str)) {
+            my $char = shift @$str;
+            given ($char) {
+                when (/\{/) {
+                    # Put only nested opening blocks on the stack.
+                    $block .= $char if ($depth > 0);
+                    $depth++;
                 }
+                when (/\}/) {
+                    $depth--;
+                    $block .= $char if ($depth > 0);
+                    last if ($depth == 0);
+                }
+                default { $block .= $char }
             }
-            $box = expand($block);
         }
-
-        return $box;
+        return expand($block);
     }
 }
 
