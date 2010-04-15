@@ -253,8 +253,15 @@ sub hpad {
     return $width;
 }
 
-# TODO Sorely lacking!  Primitive should be sth. like [:alnum:].
-sub is_primitive { return (shift =~ /(\\|\^|_)/ ? '' : 1) }
+sub is_primitive {
+    my $char = shift;
+
+    if (defined $char and length($char) == 1) {
+        return ($char =~ /(\{|\}|\\|\^|_)/ ? '' : 1);
+    } else {
+        return 0;
+    }
+}
 
 sub is_empty_box {
     my $box = shift;
