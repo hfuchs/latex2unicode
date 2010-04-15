@@ -132,7 +132,7 @@ sub make_unity_box {
     my $arg = shift; # TODO Test is_one_char().
     my $box = make_empty_box();
 
-    $arg = ' ' unless $arg;
+    $arg = ' ' unless (defined $arg);
 
     $box->{content} = [ $arg ];
     $box->{width}++;
