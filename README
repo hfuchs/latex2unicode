@@ -1,7 +1,82 @@
-Docs:
+Latex2Unicode
+========================================================================
 
-    perldoc perlunicode
-    http://en.wikipedia.org/wiki/Unicode_mathematical_operators
+2010-04-08, Created by H Fuchs <hagen.fuchs@physik.tu-dresden.de>
+
+Latex2Unicode, l2u for short, turns a subset of TeX's mathematical
+typesetting code irreversibly into a Unicode representation.  The
+current subset is defined as everything that's being used in the test
+suite.
+
+
+Design
+------------------------------------------------------------------------
+
+At heart, Latex2Unicode tries to implement a fixed-width-no-clue-version
+of TeX' box-approach.  I don't know enough about official CS-language to
+describe the approach in heavy-weight terms.  The story goes as follows:
+l2u starts to parse the string given on the command-line from left to
+right and immediately puts simple characters on a stack.  Whenever
+a special character heralds the begin of a macro, l2u tries to
+recursively determine the box dimensions and content that's associated
+with it.  Sub- and superscript operators call for slightly different
+handling (they are the only ones that need to know what went before).
+Start reading from the part marked with "main()" and you should be fine.
+The majority of the program are just handler functions that calculate
+dimensions and squeeze boxes into each other.
+
+Simple, non-nested example transformation:
+
+    Input         Internal representation            Output
+
+                    $box = {
+                      content => [ 1, ---, 2 ]          1
+    \frac12   ->      width   => 3,               ->   ---
+                      height  => 3,                     2
+                      foot    => 1,
+                      head    => 1,
+                    }
+
+Whenever a box is nested into another, the parameters will be balanced
+and matched accordingly, so that the baseline of the equation remains
+undisturbed.
+
+
+Remarks
+------------------------------------------------------------------------
+
+2010-04-16,  I started off trying to hack Brightmare into accepting
+'\vec' and other things that just didn't work the way I expected them
+to.  But.  No Human-readable documentation; just a Polish README and an
+extremely rudimentary man-page.  Why is there never a short,
+English-language design document with a short philosophy section, ideas
+and starting points?  It's not that hard, is it?  And yes, I was
+interested in hacking OCaml (I still am) - but leave some damn
+breadcrumbs!  The only comments are:
+
+  * a few TODOs and FIXMEs;
+  * character class descriptions ('small Greek letters');
+  * GPL-notice (big fucking use, thanks!);
+  * vim-config-string (Ah, so you prefer 96 characters textwidth?); and
+  * separators (* --------------- *).
+
+That's it.  For Christ's sake.  Am I the only one that doesn't
+immediately grasp the intrinsic workings of a program > 300LOC without
+a bit of hand-holding?  When, FFS!, will average run-of-the-mill
+programmers realise that they're *not* talking to the machine (that's
+just a freaking coincidence!), but to a Human being instead?  That shit
+really looks interesting - what a waste.  What a goddamn waste.
+
+
+Documents
+----------------------------------------------------------------------
+
+  - perldoc perlunicode
+  - http://en.wikipedia.org/wiki/Unicode_mathematical_operators
+
+
+Misc
+----------------------------------------------------------------------
 
 Satan's Little Helper:
 
@@ -14,4 +89,10 @@ Test the repository:
     cd latex2unicode
     chmod +x latex2unicode
     perl test.pl
+
+Licence
+----------------------------------------------------------------------
+
+All of this is licenced under the most current version of the GNU Public
+Licence.  Happy?
 
