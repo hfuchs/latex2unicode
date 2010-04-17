@@ -15,6 +15,12 @@ my %good   = (
     # Graßmann Identity
     '\vec{a}\times(\vec{b}\times\vec{c}) = \vec{b}(\vec{a}\cdot\vec{c})\,-\,\vec{c}(\vec{a}\cdot\vec{b})' =>
     "a⃗×(b⃗×c⃗)=b⃗(a⃗·c⃗) - c⃗(a⃗·b⃗)",
+    # Period of a compound pendulum
+    'T=2\pi\sqrt{\frac{J}{mgd}}' =>
+    "     ╭─────\n     │  J  \nT=2π2│―――――\n    ╶╯ mgd ",
+    # Gauß' Identity
+    'e^{i\pi} = -1' => " iπ   \ne  =-1",
+    # TODO 'e^x = \cos{x} + i \sin{x}'
 );
 
 while (my ($in, $out) = each %good) {
