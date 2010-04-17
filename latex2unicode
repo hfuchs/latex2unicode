@@ -12,23 +12,32 @@ use L2U::Constants;
 
 my $DEBUG = 0;
 
-# -- main()
+# -- Main
 # ----------------------------------------------------------------------
 
 my $input = decode_utf8 join ' ', @ARGV;
 
+# This is it.  That's latex2unicode, ladies'n'gentlemen.
 pretty_print(expand(substitute_chars(normalize_input($input))));
 
 # -- Subroutines
 # ----------------------------------------------------------------------
 
+# Output
 sub pretty_print {
     my $box = shift; # reference
 
     say encode_utf8 $_ foreach @{$box->{content}};
 }
 
+# Parser
 sub expand {
+    # expand - parse TeX string, delegate handling of different symbols
+    # to the appropriate functions and collect the boxes that they
+    # return onto a stack.  This stack is returned as an all-
+    # encompassing box at EOS (end-of-string).
+    #
+    # TODO PODify documentation.
     # TODO Allow for arrays to be passed
     my @str = split //, shift;
     my @stack;
@@ -54,6 +63,7 @@ sub expand {
             # concept: their handlers need to know what block went
             # *before*.  TODO Are there more of these?
             when (/(_|\^)/) {
+                # TODO Move this part into a separate handler!
                 unshift @str, $_;
 
                 my ($upper, $lower) = find_limits(\@str);
@@ -121,13 +131,7 @@ sub expand {
     return boxify(@stack);
 }
 
-#sub look_ahead {
-#    my $str  = shift;
-#    my $char = shift;
-#
-#    return scalar(grep(/$char/, @$str));
-#}
-
+# Box Creation, Padding & Tester
 sub make_unity_box {
     my $arg = shift; # TODO Test is_one_char().
     my $box = make_empty_box();
@@ -189,6 +193,8 @@ sub boxify {
 }
 
 sub vpad {
+    # vpad, rather stupidly, pads a single box according to the box' own
+    # dimensional specifications.
     D("> vpad");
     my $foot = shift;
     my $head = shift;
@@ -275,6 +281,7 @@ sub is_unit_box {
     return 0;
 }
 
+# Character Characterisation :)
 sub is_superscriptable {
     my $box = shift;
 
@@ -303,6 +310,7 @@ sub is_subscriptable {
     }
 }
 
+# Macro Handler Functions (Content)
 sub process_macro {
     my $str = shift; # reference
     my $cmd;
@@ -446,6 +454,7 @@ sub handle_frac {
 }
 
 sub find_limits {
+    # TODO Belongs into the parser section!
     my $str = shift;
     my ($upper, $lower);
 
@@ -510,6 +519,7 @@ sub handle_int {
 }
 
 sub find_block {
+    # TODO Belongs into the parser section!
     my $str   = shift;  # Reference.
     D('> find_block [' . join('', @$str) . ']');
 
@@ -543,7 +553,7 @@ sub find_block {
 }
 
 sub find_option {
-#    my $count  = shift;
+    # TODO Belongs into the parser section!
     my $str    = shift;  # Reference.
     my $string = join('', @$str);
     D("> find_option [$string]");
@@ -561,6 +571,7 @@ sub find_option {
     }
 }
 
+# Input
 sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
     my $in = shift;
 
@@ -570,6 +581,7 @@ sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
 }
 
 sub substitute_chars {
+    # TODO Belongs into the character section
     my $in = shift;
     my $chars = get_primitive_chars;
 
@@ -580,9 +592,11 @@ sub substitute_chars {
     return $in;
 }
 
+# Helper
 sub D {
     if ($DEBUG) {
         my $msg = shift;
         print STDERR $msg . "\n";
     }
 }
+
