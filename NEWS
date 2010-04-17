@@ -1,3 +1,11 @@
+0.5
+    latex2unicode has been modularized and code exposure doesn't cause
+    ill health any longer.
+0.4
+    latex2unicode handles all the test cases of BrightMare well.
+--->  Current version
+0.3
+    The last major handler, \sqrt, has been implemented.
 0.2
     Handlers for \int, \frac, _ and ^ have been implemented.  A complete
     set of greek character translations exists.  Nested blocks are
