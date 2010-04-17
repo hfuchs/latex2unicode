@@ -46,14 +46,7 @@ sub expand {
     while (@str) {
         given (shift @str) {
             when (is_primitive($_)) {
-                my $box = { # TODO Write a routine?  put_into_box()?
-                    content => [ $_ ],
-                    foot    => 0,
-                    head    => 0,
-                    width   => 1,
-                    height  => 1,
-                };
-                push @stack, $box;
+                push @stack, make_unity_box($_);
             }
             when (/\\/) { # Encountered macro sign, find handler.
                 push @stack, process_macro(\@str);
@@ -420,12 +413,7 @@ sub handle_bar {
 
 sub handle_comma {
     D("> handle_comma");
-    my $str = shift;
-
-    my $box = make_empty_box();
-    $box->{content} = [' '];
-    $box->{width} = 1;
-    return $box;
+    return make_unity_box(' ');
 }
 
 sub handle_frac {
