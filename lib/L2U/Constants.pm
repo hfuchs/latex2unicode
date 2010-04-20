@@ -53,8 +53,16 @@ my %chars = (
     'times' => "\x{d7}",
     'cdot'  => "\x{b7}",
     # Signs
-    'infty' => "\x{221e}",
-    'propto' => "\x{221d}",
+    'infty'      => "\x{221e}",
+    'propto'     => "\x{221d}",
+    'ldots'      => "\x{2026}",
+    'leftarrow'  => "\x{2190}",
+    'Leftarrow'  => "\x{21D0}",
+    'rightarrow' => "\x{2192}",
+    'Rightarrow' => "\x{21D2}",
+    # TODO These two need to handle arguments.
+    #'cos'  => "cos",
+    #'sin'  => "sin",
 );
 
 my %superscripts = (
@@ -95,9 +103,9 @@ my %subscripts = (
     ')' => "\x{208e}",
     'a' => "\x{2090}",
     'e' => "\x{2091}",
-    'o' => "\x{2092}",
+    'o' => "\x{2092}",  # Doesn't work for me!
     'x' => "\x{2093}",
-    # TODO Character 'upside-down e'
+    # TODO The schwa-sound character
 );
 
 
