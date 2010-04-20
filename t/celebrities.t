@@ -5,7 +5,7 @@ use Test::More 'no_plan';
 use Data::Dumper;
 use Encode;
 
-my $l2u    = './latex2unicode';
+my $l2u    = './bin/latex2unicode';
 
 my %good   = (
     'E=mc^2'      => "E=mc²",

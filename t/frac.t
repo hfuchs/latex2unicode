@@ -5,7 +5,7 @@ use Test::More 'no_plan';
 use Data::Dumper;
 use Encode;
 
-my $l2u    = './latex2unicode';
+my $l2u    = './bin/latex2unicode';
 
 my %good   = (
     # 2010-04-11, Can't do the following - get an untrackable "wide
