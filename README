@@ -90,6 +90,17 @@ Test the repository:
     chmod +x latex2unicode
     perl test.pl
 
+
+
+TODO
+----------------------------------------------------------------------
+
+Build Process:
+
+  * Do I really need a MANIFEST file?
+
+
+
 Licence
 ----------------------------------------------------------------------
 
