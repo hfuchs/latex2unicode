@@ -1,0 +1,10 @@
+2010-10-20, Shamelessly copied from my own project HUnit.
+
+Install
+---------
+
+perl Makefile.PL PREFIX=$HOME/local
+make test
+make install
+(make clean)
+
