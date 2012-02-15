@@ -14,6 +14,9 @@ my %good   = (
     '\frac12'         => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
     '\frac{1}{2}'     => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
     '\frac{1}{12}'    => "  1 \n" . "\x{2015}"x4 . "\n 12 ",
+    # 2011-01-19, TODO Where's this from?
+    #'\frac{y}{x^{e}}+\frac{y^{e}}{x}' =>
+    #"       e \n  y   y  \n――――+――――\n  e    x \n x       ",
 );
 
 while (my ($in, $out) = each %good) {

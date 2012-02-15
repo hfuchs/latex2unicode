@@ -27,11 +27,18 @@ my %good   = (
     " ∞                \n ╭   ╭────────────\n │   │ 0          \n │   │ ╭     12x⃗ \n │   │ │dx³―――――――\n │ 14│ ╯    32·a₄ \n ╯  ╶╯-∞          \ni=1               ",
     '\int\frac12\vec{x}' =>
     "╭ 1  \n│―――x⃗\n╯ 2  ",
+    # TODO Interesting: Pasting the output of latex2unicode into another
+    # terminal (with this file open), the combined character 'J\x{302}'
+    # became '\x{134}' which is not what L2U returns...
+    # Is this Unicode Normalization in action?
+    '[\hat{J}_a,\hat{\mathbf{j}}^2]=0' => "[J\x{302}ₐ,j\x{302}²]=0",
 );
 
 while (my ($in, $out) = each %good) {
     my $got = decode_utf8 `$l2u "$in"`;
     chomp $got;
+    #say STDERR Dumper($got);
+    #say STDERR Dumper($out);
     is $got, $out, "Test: $in";
 }
 

@@ -11,6 +11,7 @@ my %good   = (
     # 2010-04-14, `pdflatex` complains about "Double superscript" - why
     # should I care?  So, for now, this is a feature; not a bug.
     'x^2^3'    => "x²³",
+    '{x}'      => "x",
 );
 
 while (my ($in, $out) = each %good) {
