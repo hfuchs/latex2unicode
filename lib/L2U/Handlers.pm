@@ -8,20 +8,42 @@ sub handle {
     my $stack = shift; # optional reference
     my $box;
 
+    D("> handle [$cmd]");
+
     given($cmd) {
+        # TODO This should be a hash table.
         when (/,/)     { $box = handle_comma($str) }
         when (/bar/)   { $box = handle_bar($str) }
         when (/vec/)   { $box = handle_vec($str) }
+        when (/hat/)   { $box = handle_hat($str) }
         when (/dot/)   { $box = handle_dot($str) }
         when (/sqrt/)  { $box = handle_sqrt($str) }
         when (/frac/)  { $box = handle_frac($str) }
         # TODO handle_{power,sub} no longer exist!
         #when (/power/) { $box = handle_power($str, $stack) }
         #when (/sub/)   { $box = handle_sub($str, $stack) }
-        when (/int/) { $box = handle_int($str) }
+        when (/int/)         { $box = handle_int($str) }
+        when (/mathrm|rm/)   { $box = handle_dummy($str) }
+        # TODO Handle \mathbb differently!  See
+        # <http://en.wikipedia.org/wiki/Blackboard_bold>.
+        when (/mathbf/)      { $box = handle_dummy($str) }
+        when (/langle/)      { $box = handle_langle($str) }
+        # TODO Just repressing the endtoken seems lame...
+        when (/rangle/)      { $box = handle_dummy($str) }
+        # TODO More generic:
+        #when (/left/)        { $box = handle_left($str) }
         default      { die "Unknown command [$_].  Can't handle." }
     }
     return $box;
+}
+
+sub handle_dummy {
+    D("> handle_dummy");
+    my $str = shift;
+
+    return find_block($str);
+    #my $block = find_block($str);
+    #return handle($char;
 }
 
 sub handle_dot {
@@ -32,8 +54,7 @@ sub handle_dot {
     my $char = find_block($str);
     # TODO Not sure about the character choice here.
     # The 'dot' combining character, \x{0307}, *removes* other combining
-    # chars.
-    # \x{030a}: small circle,
+    # chars.  \x{030a}: small circle,
     $char->{content}->[0] = $char->{content}->[0] . "\x{030a}";
     return $char;
 }
@@ -44,9 +65,19 @@ sub handle_vec {
 
     # TODO Check for single character!
     my $char = find_block($str);
+    $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
+    return $char;
+}
+
+sub handle_hat {
+    D("> handle_hat");
+    my $str = shift;
+
+    # TODO Check for single character!
+    my $char = find_block($str);
     # Two alternatives, \x{0362}: arrow below, \x{20d7}: o⃗
     # \x{20d1}: o⃑
-    $char->{content}->[0] = $char->{content}->[0] . "\x{20d7}";
+    $char->{content}->[0] = $char->{content}->[0] . "\x{0302}";
     return $char;
 }
 
@@ -86,6 +117,19 @@ sub handle_sqrt {
     $arg->{head}++;
 
     return boxify($degree, $sep, $arg);
+}
+
+# TODO Parenthetical macros
+sub handle_langle {
+    # TODO See http://en.wikipedia.org/wiki/Bracket
+    my $str = shift; # Reference
+    D("> handle_langle");
+    my $box;
+
+    # Gather the necessary information.
+    my $arg    = find_ext_block($str, '\langle', '\rangle');
+
+    return $arg;
 }
 
 # TODO Trigonometric Functions
@@ -180,5 +224,5 @@ sub handle_int {
     return boxify($intbox, $arg);
 }
 
-
 1;
+
