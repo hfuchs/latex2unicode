@@ -1,5 +1,8 @@
+# TODO It would probably be simplest to parse
+# <http://www.ams.org/STIX/bnb/stix-tbl.asc98feb26>.
+
 my %chars = (
-    'Alpha'    => "\x{0391}",
+    'Alpha'    => "\x{0391}", # Not actually defined in LaTeX...
     'Beta'     => "\x{0392}",
     'Gamma'    => "\x{0393}",
     'Delta'    => "\x{0394}",
@@ -49,12 +52,20 @@ my %chars = (
     'chi'      => "\x{03C7}",
     'psi'      => "\x{03C8}",
     'omega'    => "\x{03C9}",
+    # Number Chars
+    'aleph'    => "\x{2135}",
+    'imath'    => "\x{131}", # "\x{E64E}",
+    'hbar'     => "\x{126}", # "\x{E2D5}",
     # Operators
-    'times' => "\x{d7}",
-    'cdot'  => "\x{b7}",
+    'times'    => "\x{d7}",
+    'cdot'     => "\x{b7}",
+    'partial'  => "\x{2202}",
     # Signs
     'infty'      => "\x{221e}",
     'propto'     => "\x{221d}",
+    'equiv'      => "\x{2261}",
+    'll'         => "\x{226a}",
+    'gg'         => "\x{226b}",
     'ldots'      => "\x{2026}",
     'leftarrow'  => "\x{2190}",
     'Leftarrow'  => "\x{21D0}",
