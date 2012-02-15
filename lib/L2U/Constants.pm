@@ -55,7 +55,7 @@ my %chars = (
     # Number Chars
     'aleph'    => "\x{2135}",
     'imath'    => "\x{131}", # "\x{E64E}",
-    'hbar'     => "\x{126}", # "\x{E2D5}",
+    'hbar'     => "\x{127}", # "\x{E2D5}", italic: \x{210F}, capital: \x{126}
     # Operators
     'times'    => "\x{d7}",
     'cdot'     => "\x{b7}",
