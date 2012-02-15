@@ -3,15 +3,19 @@
 use strict; use warnings; use utf8;
 use feature qw/say switch/;
 
+# Perl Modules
 use Encode;
-use charnames ':full'; # "\N{WHITE SMILING FACE}";
-use Data::Dumper;
+#use charnames ':full'; # "\N{WHITE SMILING FACE}";
+#use Data::Dumper;
 use POSIX qw(floor);
 
+# My Modules
+use lib qw/lib/;
 use L2U::Constants;
 use L2U::Handlers;
+#use L2U::Logger;  # TODO No such thing!
 
-my $DEBUG = 0;
+my $DEBUG = 0;     # TODO How about a command-line switch?
 
 # -- Main
 # ----------------------------------------------------------------------
@@ -39,7 +43,8 @@ sub expand {
     # encompassing box at EOS (end-of-string).
     #
     # TODO PODify documentation.
-    # TODO Allow for arrays to be passed
+    # TODO Allow for arrays to be passed.
+    # TODO Much too huge.
     my @str = split //, shift;
     my @stack;
     D("> expand [" . join('', @str). "]");
@@ -308,6 +313,7 @@ sub is_subscriptable {
 sub process_macro {
     my $str = shift; # reference
     my $cmd;
+    D('> process_macro');
 
     while ($str->[0] =~ /[,a-zA-Z]/) {
         $cmd .= shift @$str;
@@ -344,7 +350,10 @@ sub find_limits {
 sub find_block {
     # TODO Belongs into the parser section!
     my $str   = shift;  # Reference.
+
     D('> find_block [' . join('', @$str) . ']');
+    my ($package, $filename, $line, $subroutine ) = caller(1);
+    D('> > caller: ' . $subroutine);
 
     if (is_primitive($str->[0])) {
         return make_unity_box(shift @$str);
@@ -398,6 +407,8 @@ sub find_option {
 sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
     my $in = shift;
 
+    # TODO Introduce 'spacious' option!
+    #$in =~ s/\s{2,}/ /g;  # Using this line will break /many/ tests!
     $in =~ s/\s//g;
 
     return $in;
