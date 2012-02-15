@@ -1,12 +1,12 @@
 Latex2Unicode
 ========================================================================
 
-2010-04-08, Created by H Fuchs <hagen.fuchs@physik.tu-dresden.de>
+2010-04-08, Created by H Fuchs <code@hfuchs.net>
 
 Latex2Unicode, l2u for short, turns a subset of TeX's mathematical
 typesetting code irreversibly into a Unicode representation.  The
 current subset is defined as everything that's being used in the test
-suite.
+suite (hey, that's as rigorous a definition you'll ever see!).
 
 
 Design
@@ -45,27 +45,36 @@ undisturbed.
 Remarks
 ------------------------------------------------------------------------
 
-2010-04-16,  I started off trying to hack Brightmare into accepting
-'\vec' and other things that just didn't work the way I expected them
-to.  But.  No Human-readable documentation; just a Polish README and an
-extremely rudimentary man-page.  Why is there never a short,
-English-language design document with a short philosophy section, ideas
-and starting points?  It's not that hard, is it?  And yes, I was
-interested in hacking OCaml (I still am) - but leave some damn
-breadcrumbs!  The only comments are:
+2010-04-16,  I started off trying to beat Jakub Wilk's Brightmare[0]
+into accepting '\vec' and other things that just didn't work the way
+I expected them to.
+
+But.  No Human-readable documentation apart from a (gorgeous-looking,
+ASCII-artified!) Polish README and an extremely rudimentary man-page.
+Why don't I ever find a short, English-language design document with
+a short philosophy section, ideas and starting points?  It's not that
+hard, is it (I am available for consultation)?  And yes, I was
+interested in hacking OCaml (I still am) - but leave some breadcrumbs,
+man!  The only comments are:
 
   * a few TODOs and FIXMEs;
   * character class descriptions ('small Greek letters');
-  * GPL-notice (big fucking use, thanks!);
-  * vim-config-string (Ah, so you prefer 96 characters textwidth?); and
+  * GPL-notice (Largest comment by far);
+  * vim-config-string (Ah, so at least I know you prefer tw=96); and
   * separators (* --------------- *).
 
 That's it.  For Christ's sake.  Am I the only one that doesn't
 immediately grasp the intrinsic workings of a program > 300LOC without
-a bit of hand-holding?  When, FFS!, will average run-of-the-mill
-programmers realise that they're *not* talking to the machine (that's
-just a freaking coincidence!), but to a Human being instead?  That shit
-really looks interesting - what a waste.  What a goddamn waste.
+a bit of hand-holding?  When will the god-like programmers the
+Internet seems to be teeming with realise that they're *not* talking to
+the machine (which is just a freaking coincidence), but to a Human being
+instead?  That shit really looks interesting - what a waste.
+
+And that's open source for you.  We're doomed to reinvent shit over and
+over again.
+
+
+[0] http://jwilk.net/software/brightmare
 
 
 Documents
@@ -73,6 +82,11 @@ Documents
 
   - perldoc perlunicode
   - http://en.wikipedia.org/wiki/Unicode_mathematical_operators
+
+Not yet read:
+
+  - http://unicode.org/reports/tr25/
+  - http://unicode.org/notes/tn28/UTN28-PlainTextMath-v3.pdf
 
 
 Misc
@@ -82,13 +96,13 @@ Satan's Little Helper:
 
     perl -e 'use utf8; use Data::Dumper; print Dumper("UNICODE_CHAR")'
 
-Test the repository:
+Test (see INSTALL, too):
 
     cd /tmp
-    darcs get ~/data/projects/latex2unicode/
+    git clone git@github.com:hfuchs/latex2unicode
     cd latex2unicode
-    chmod +x latex2unicode
-    perl test.pl
+    perl Makefile.PL PREFIX=$HOME/local
+    make test
 
 
 
@@ -98,7 +112,18 @@ TODO
 Build Process:
 
   * Do I really need a MANIFEST file?
+  * Recommend GNU unifont, -gnu-unifont-medium-r-normal--0-0-75-75-c-0-iso10646-1
+  * Module::Build vs ExtUtils::MakeMaker:
+    MakeMaker looks much more pleasing/straightforward
 
+Alternatives:
+
+  * asciiTeX, <http://asciitex.sourceforge.net/>
+  * BrightMaRe, <http://jwilk.net/software/brightmare>
+
+Tec:
+
+  * In '\frac12 e^{2x^2}', should there be a small gap between bar and 'e'?
 
 
 Licence
