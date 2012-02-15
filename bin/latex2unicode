@@ -123,7 +123,12 @@ sub expand {
 
                 push @stack, $box;
             }
-            default { die "New character class?!" }
+            when (/{/) {
+                # TODO Another kludge: Putting the curly brace back...
+                unshift @str, '{';
+                push @stack, find_block(\@str);
+            }
+            default { die "New character class? [@str]" }
         }
     }
 
@@ -382,6 +387,31 @@ sub find_block {
         }
         return expand($block);
     }
+}
+
+sub find_ext_block {
+    # TODO Adding experimental support for \left, \right blocks...
+    my $str   = shift;  # Reference.
+    my $begin = ( @_ ? quotemeta(shift) : '{' ); # Possible values: '('
+    my $end   = ( @_ ? quotemeta(shift) : '}' ); # Possible values: '\right)'
+
+    my $string = join('', @$str);  # TODO Think long and hard about this.
+
+    D("> find_ext_block [$begin...$end in '$string']");
+
+    my $block = '';
+    my $depth = 1;  # Compensate for missing opening token!
+
+    while (length($string)) {
+        $depth++ if ($string =~ /^$begin/);
+        $depth-- if ($string =~ /^$end/);
+        last     if ($depth == 0);
+
+        $block .= substr $string, 0, 1, '';  # Essentially shift().
+
+        die "Unbalanced parens" if ($depth < 0); # TODO Beautify!
+    }
+    return expand($block);
 }
 
 sub find_option {
