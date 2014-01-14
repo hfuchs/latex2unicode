@@ -14,6 +14,10 @@ my %good   = (
     '\frac12'         => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
     '\frac{1}{2}'     => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
     '\frac{1}{12}'    => "  1 \n" . "\x{2015}"x4 . "\n 12 ",
+    # 2014-01-15, length("a\x{30a}") returns two, but \x{30a} is
+    # a combining character.
+    '\frac{1}{\dot{a}}'
+                      => " 1 \n" . "\x{2015}"x3 . "\n å \n",
     # 2011-01-19, TODO Where's this from?
     #'\frac{y}{x^{e}}+\frac{y^{e}}{x}' =>
     #"       e \n  y   y  \n――――+――――\n  e    x \n x       ",
