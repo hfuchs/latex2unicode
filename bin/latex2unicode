@@ -2,6 +2,7 @@
 
 use strict; use warnings; use utf8;
 use feature qw/say switch/;
+no warnings;
 
 # Perl Modules
 use Encode;
