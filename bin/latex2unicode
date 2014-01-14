@@ -16,7 +16,7 @@ use L2U::Constants;
 use L2U::Handlers;
 #use L2U::Logger;  # TODO No such thing!
 
-my $DEBUG = 0;     # TODO How about a command-line switch?
+my $DEBUG = 1 if $ENV{DEBUG};
 
 # -- Main
 # ----------------------------------------------------------------------
