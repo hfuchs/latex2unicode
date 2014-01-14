@@ -2,6 +2,7 @@
 # <http://www.ams.org/STIX/bnb/stix-tbl.asc98feb26>.
 
 my %chars = (
+    'log'      => "log",
     'Alpha'    => "\x{0391}", # Not actually defined in LaTeX...
     'Beta'     => "\x{0392}",
     'Gamma'    => "\x{0393}",
