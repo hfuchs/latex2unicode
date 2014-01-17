@@ -1,4 +1,4 @@
-# Created 2009-01-31 by H Fuchs <hagen.fuchs@physik.tu-dresden.de>
+# Created 2009-01-31 by H Fuchs <code@hfuchs.net>
 
 # --- Introduction
 # Option parsing with Perl's GetOptions implementation requires Getopt::Std,

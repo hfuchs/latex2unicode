@@ -1,4 +1,4 @@
-# Created 2009-01-31 by H Fuchs <hagen.fuchs@physik.tu-dresden.de>
+# Created 2009-01-31 by H Fuchs <code@hfuchs.net>
 
 # ---- Subroutine Declarations
 # ----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ sub display_help { # TODO: PODify this
    print "   -t  self-test\n";
    print "\n";
 
-   exit -1; 
+   exit -1;
 }
 # ------------------------
 sub test_myself {

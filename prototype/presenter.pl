@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Created 2009-01-31 by H Fuchs <hagen.fuchs@physik.tu-dresden.de>
+# Created 2009-01-31 by H Fuchs <code@hfuchs.net>
 # Purpose
 #   Twofold; firstly, I try to emulate literate programming with the help of
 #   defining lots of modules that are in themselves small, specific and
