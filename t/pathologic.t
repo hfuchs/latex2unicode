@@ -17,6 +17,9 @@ my %good   = (
 while (my ($in, $out) = each %good) {
     my $got = decode_utf8 `$l2u "$in"`;
     chomp $got;
+    use Unicode::Normalize qw(reorder decompose);
+    $got = reorder(decompose($got));
+    $out = reorder(decompose($out));
     is $got, $out, "Test: $in";
 }
 

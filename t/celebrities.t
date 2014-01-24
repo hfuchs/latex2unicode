@@ -23,9 +23,13 @@ my %good   = (
     # TODO 'e^x = \cos{x} + i \sin{x}'
 );
 
+# TODO Rampant code duplication in all .t files.
 while (my ($in, $out) = each %good) {
     my $got = decode_utf8 `$l2u "$in"`;
     chomp $got;
+    use Unicode::Normalize qw(reorder decompose);
+    $got = reorder(decompose($got));
+    $out = reorder(decompose($out));
     is $got, $out, "Test: $in";
 }
 
