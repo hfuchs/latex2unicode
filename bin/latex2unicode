@@ -12,6 +12,7 @@ use POSIX qw(floor);
 
 # My Modules
 use lib qw/lib/;
+use L2U::Common;
 use L2U::Constants;
 use L2U::Handlers;
 #use L2U::Logger;  # TODO No such thing!
@@ -32,6 +33,7 @@ pretty_print(expand(substitute_chars(normalize_input($input))));
 # Output
 sub pretty_print {
     my $box = shift; # reference
+    D("> pretty_print");
 
     say encode_utf8 $_ foreach @{$box->{content}};
 }
@@ -140,6 +142,7 @@ sub expand {
 sub make_unity_box {
     my $arg = shift; # TODO Test is_one_char().
     my $box = make_empty_box();
+    D("> make_unity_box");
 
     $arg = ' ' unless (defined $arg);
 
@@ -158,6 +161,8 @@ sub make_empty_box {
         head    => 0,
         foot    => 0
     };
+    D("> make_empty_box");
+
     return $box;
 }
 
@@ -224,6 +229,7 @@ sub vpad {
 }
 
 sub hpad {
+    D("> hpad");
     my @boxes = @_;  # References (first argument might be a string).
     my $width = 1;   # Minimal box width.
     my $align = "center";  # Standard alignment
@@ -265,6 +271,7 @@ sub hpad {
 }
 
 sub is_primitive {
+    D("> is_primitive");
     my $char = shift;
 
     if (defined $char and length($char) == 1) {
@@ -275,12 +282,14 @@ sub is_primitive {
 }
 
 sub is_empty_box {
+    D("> is_empty_box");
     my $box = shift;
     return 1 if ($box->{width} + $box->{height} == 0);
     return 0;
 }
 
 sub is_unit_box {
+    D("> is_empty_box");
     my $box = shift;
     return 1 if ($box->{width} * $box->{height} == 1);
     return 0;
@@ -288,6 +297,7 @@ sub is_unit_box {
 
 # Character Characterisation :)
 sub is_superscriptable {
+    D("> is_superscriptable");
     my $box = shift;
 
     return 0 unless (is_unit_box($box));
@@ -302,6 +312,7 @@ sub is_superscriptable {
 }
 
 sub is_subscriptable {
+    D("> is_subscriptable");
     my $box = shift;
 
     return 0 unless is_unit_box($box);
@@ -329,6 +340,7 @@ sub process_macro {
 }
 
 sub find_limits {
+    D("> find_limits");
     # TODO Belongs into the parser section!
     my $str = shift;
     my ($upper, $lower);
@@ -436,6 +448,7 @@ sub find_option {
 
 # Input
 sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
+    D("> normalize_intput");
     my $in = shift;
 
     # TODO Introduce 'spacious' option!
@@ -446,6 +459,7 @@ sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
 }
 
 sub substitute_chars {
+    D("> substitute_chars");
     # TODO Belongs into the character section
     my $in = shift;
     my $chars = get_primitive_chars;
