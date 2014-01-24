@@ -4,6 +4,8 @@ use feature qw/switch say/;
 # TODO God, how I hate those "(given|when) is experimental" messages!
 no warnings;
 
+use L2U::Common;
+
 sub handle {
     my $cmd = shift; # string
     my $str = shift; # reference
