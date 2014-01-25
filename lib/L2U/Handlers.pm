@@ -56,10 +56,14 @@ sub handle_dot {
 
     # TODO Check for single character!
     my $char = find_block($str);
-    # TODO Not sure about the character choice here.
+    # 2010-04-20, Not sure about the character choice here.
     # The 'dot' combining character, \x{0307}, *removes* other combining
-    # chars.  \x{030a}: small circle,
-    $char->{content}->[0] = $char->{content}->[0] . "\x{030a}";
+    # chars.  So, \x{030a}: small circle?
+    # No, the *other* dot.  I used this little trick to find it:
+    # Extract combined character from vim's :digraph and
+    #   perl -Mcommon::sense -MData::Dumper -MUnicode::Normalize -e 'print Dumper NFD("ȧ")'
+    # I do feel a bit smug now, come to think of it, yes.
+    $char->{content}->[0] = $char->{content}->[0] . "\x{307}";
     return $char;
 }
 
@@ -173,7 +177,8 @@ sub handle_frac {
     hpad($num, $denom);
 
     my @frac = @{$num->{content}};
-    push @frac, "\x{2015}"x($num->{width}+2);
+    #push @frac, "\x{2015}"x($num->{width}+2);
+    push @frac, "\x{2576}" . "\x{2500}"x($num->{width}) . "\x{2574}";
     push @frac, @{$denom->{content}};
 
     $box = {
