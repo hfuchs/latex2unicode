@@ -1,38 +1,12 @@
-# Ignore everything that isn't hidden.
-[^.]*
-
-# Ever changing files.
-.fetchids
-.procmaillog
-.viminfo
-.bash_history
-.lesshst
-.smex.db
-.gnuplot_history
-.mysql_history
-.sqlite_history
-
-# Useful, but non-controlled files.
-.xskat*
-.xscreensaver
-.fonts
-.pwsafe*
-
 # 2011-04-13, Only the good lord knows where this came from.
+# 2014-01-26, Yea and I say unto you: It was imported from a totally
+# different project you fool!
 Makefile
-.last_cover_stats
+MYMETA.*
 MANIFEST.bak
 *.old
 *.swp
 *~
 blib
 pm_to_blib
-cover_db
-example/logs
-t/*/logs
-t/*/sessions
-logs
-TestApp
-t/sessions/
-tags
 
