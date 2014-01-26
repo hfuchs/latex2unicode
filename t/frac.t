@@ -11,10 +11,10 @@ my %good   = (
     # 2010-04-11, Can't do the following - get an untrackable "wide
     # character in print" somewhere in the test routines.
     # 2014-01-24, HA!  Solved *that* old nut!
-    '\frac12'     => "1\n─\n2",
-    '\frac12'         => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
-    '\frac{1}{2}'     => " 1 \n" . "\x{2015}"x3 . "\n 2 ",
-    '\frac{1}{12}'    => "  1 \n" . "\x{2015}"x4 . "\n 12 ",
+    '\frac12'     => "1\n╶─╴\n2",
+    '\frac12'         => " 1 \n" . "╶─╴" . "\n 2 ",
+    '\frac{1}{2}'     => " 1 \n" . "╶─╴" . "\n 2 ",
+    '\frac{1}{12}'    => "  1 \n" . "╶──╴" . "\n 12 ",
 
     # 2014-01-15, length("a\x{30a}") returns two, but \x{30a} is
     # a combining character.
@@ -27,7 +27,7 @@ my %good   = (
     #   ii) use CPAN (Unicode::Normalize or sth like that).
     # #2 it is.
     '\frac{1}{\dot{a}}'
-                      => " 1 \n" . "\x{2015}"x3 . "\n å ",
+                      => " 1 \n" . "╶─╴" . "\n ȧ ",
     # 2011-01-19, TODO Where's this from?
     #'\frac{y}{x^{e}}+\frac{y^{e}}{x}' =>
     #"       e \n  y   y  \n――――+――――\n  e    x \n x       ",
