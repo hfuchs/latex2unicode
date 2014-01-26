@@ -8,7 +8,17 @@ use Encode;
 my $l2u    = './bin/latex2unicode';
 
 my %good   = (
-    'E=mc^2'      => "E=mc²",
+    # Euler-Lagrange Equations
+    # 2014-01-25, They have now achieved a form most beautiful!
+    '\frac{d}{dt} \frac{\partial L}{\partial\dot{q}_i} = \frac{\partial L}{\partial q_i}' =>
+"  d   ∂L    ∂L \n".
+"╶──╴╶───╴=╶───╴\n".
+" dt  ∂q̇ᵢ   ∂qᵢ ",
+
+    # Energy-Mass-Equivalence
+    'E=mc^2' =>
+    "E=mc²",
+
     # Lagrange Identity
     '(\vec{a}\times\vec{b})\cdot(\vec{c}\times\vec{d}) = (\vec{a}\cdot\vec{c})(\vec{b}\cdot\vec{d}) - (\vec{b}\cdot\vec{c})(\vec{a}\cdot\vec{d})' =>
     "(a⃗×b⃗)·(c⃗×d⃗)=(a⃗·c⃗)(b⃗·d⃗)-(b⃗·c⃗)(a⃗·d⃗)",
