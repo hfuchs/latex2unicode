@@ -98,9 +98,30 @@ sub handle_sqrt {
     my $degree = find_option($str);
     my $arg    = find_block($str);
 
-    # Combose the degree-box
-    # TODO Handle one-line case (and degree 2, 3, 4)
+    # Set the root's default degree if none's given.
     $degree = make_unity_box('2') if is_empty_box($degree);
+
+    # One-line case first (also: root can be of fourth degree max).
+    # Eg. '\sqrt[4]{2\pi i}' -> "\x{221c}2\x{0305}π\x{0305}i\x{0305}" -> ∜2̅π̅i̅
+    if ( $arg->{height} == 1 and grep { $_ eq $degree->{content}[0] } (2,3,4) ) {
+        my $box = make_empty_box();
+
+        # Define a mapping of degree numbers to Unicode.
+        my %map = ( '2' => "\x{221a}", '3' => "\x{221b}", '4' => "\x{221c}" );
+
+        # This puts the combining character for the top bar after every
+        # character.  Probably simpler with splice(), but ... I wrote
+        # it, it works, waddayawant.
+        # Second line: Add appropriate root character in front.
+        my $inside = join '', map { "$_" . "\x{0305}" } split '', $arg->{content}[0];
+        $box->{content} = [ $map{$degree->{content}[0]} . $inside ];
+
+        return boxify($box);
+    }
+
+    # Now for the more general case.
+    #
+    # Combose the degree-box.
     push @{$degree->{content}}, " " x ($degree->{width}-1) . "\x{2576}";
     foreach (1 .. ($arg->{height} - 1)) {
         unshift @{$degree->{content}}, " " x $degree->{width};
@@ -110,7 +131,7 @@ sub handle_sqrt {
     $degree->{head}    = $arg->{head} + 1;
     $degree->{foot}    = $arg->{foot};
 
-    # Compose the separator-box
+    # Compose the separator-box.
     my $sep = make_empty_box();
     $sep->{content} = [ "\x{256d}" ];
     push @{$sep->{content}}, "\x{2502}" foreach (1 .. ($arg->{height} - 1));
@@ -120,10 +141,12 @@ sub handle_sqrt {
     $sep->{head} = $arg->{head} + 1;
     $sep->{foot} = $arg->{foot};
 
+    # Put the top bar on the argument-box.
     unshift @{$arg->{content}}, "\x{2500}" x $arg->{width};
     $arg->{height}++;
     $arg->{head}++;
 
+    # Put it all together and ship it!
     return boxify($degree, $sep, $arg);
 }
 
