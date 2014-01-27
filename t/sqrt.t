@@ -8,9 +8,9 @@ use Encode;
 my $l2u    = './bin/latex2unicode';
 
 my %good   = (
-    '\sqrt{2}'     => "2╭─\n╶╯2",
-    '\sqrt{23}'    => "2╭──\n╶╯23",
-    '\sqrt[4]{23}' => "4╭──\n╶╯23",
+    '\sqrt{2}'       => "√2̅",
+    '\sqrt{2\pi{}i}' => "√2̅π̅i̅",
+    '\sqrt[4]{23}'   => "∜2̅3̅",
 );
 
 while (my ($in, $out) = each %good) {
