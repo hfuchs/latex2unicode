@@ -10,6 +10,14 @@ my $l2u    = './bin/latex2unicode';
 my %good   = (
     '\int1'    => "∫1",
     '\int{\frac{1}{\Omega^2}' => "╭  1 \n│╶──╴\n╯ Ω² ",
+    '\sum_{n=0}^\infty{\frac{3\sqrt{n}}{2}}' =>
+    "  ∞      \n".
+    "⎽⎽⎽⎽     \n".
+    "╲    3√n̅ \n".
+    " >  ╶───╴\n".
+    "╱     2  \n".
+    "⎺⎺⎺⎺     \n".
+    " n=0     ",
 );
 
 while (my ($in, $out) = each %good) {
