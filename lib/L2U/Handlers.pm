@@ -27,6 +27,7 @@ sub handle {
         #when (/power/) { $box = handle_power($str, $stack) }
         #when (/sub/)   { $box = handle_sub($str, $stack) }
         when (/int/)         { $box = handle_int($str) }
+        when (/sum/)         { $box = handle_sum($str) }
         when (/mathrm|rm/)   { $box = handle_dummy($str) }
         # TODO Handle \mathbb differently!  See
         # <http://en.wikipedia.org/wiki/Blackboard_bold>.
@@ -255,6 +256,80 @@ sub handle_int {
 
     return boxify($intbox, $arg);
 }
+
+sub handle_sum {
+    # Straight rip-off from handle_int!
+    D('> handle_sum');
+    my $str             = shift;
+    my ($upper, $lower) = find_limits($str);
+    my $arg             = find_block($str);
+
+    my @content;
+    my $intbox = {  # TODO Could I not have used make*whatever*box()?
+        width => 1,
+        height => $arg->{height},
+        head => $arg->{head},
+        foot => $arg->{foot},
+    };
+
+    if ($arg->{height} == 1) {
+        @content = ( "\x{03A3}" );
+    } else {
+        #} elsif ($arg->{height} % 2 == 0) {  # Even.  Duh!
+        # 2014-01-26, How Do I draw a life-sized sigma?
+        # 2014-01-27, With characters from Misc Technical (2300—23FF).
+        # 1  -> Σ
+        # 2? -> "\x{23b2}\n\x{23b3}" -> ⎲
+        #                               ⎳
+        # 3+ -> ⎽π̲a̲⎽
+        #       ╲
+        #        >
+        #       ╱
+        #       ⎺2̅π̅⎺
+        #
+        # 2014-01-28, First, *any* implementation will do.  I'll stick
+        # to the example of handle_int() and use Σ and
+        #   ⎽⎽⎽⎽
+        #   ╲
+        #    〉
+        #   ╱
+        #   ⎺⎺⎺⎺
+        # I don't even have to distinguish between (% 2 == 0) and (%
+        # 2 == 1), because of my "baseline" concept.
+        # TODO btw: I got confused by those concepts: write an outline!
+        #
+        push @content, "\x{23BD}"x4; # TODO Depends on height as well!
+        push @content, "\x{2572}   ";
+        push @content, ">  ";  # TODO Can't use \x{232a} for space-gobbling reasons!
+        push @content, "\x{2571}   ";
+        push @content, "\x{23BA}"x4;
+        # TODO I *must* have a function somewhere around here that
+        # - gasp! - calculates these values from the content (except for
+        # head'n'foot, of course).
+        $intbox->{height}  = 5;
+        $intbox->{width}   = 4;
+        $intbox->{foot}    = 2;
+        $intbox->{head}    = 2;
+    }
+    $intbox->{content} = \@content;
+
+    # TODO Make a vboxify function from these lines.
+    if ($upper) {
+        hpad($upper, $intbox);
+        unshift @{$intbox->{content}}, @{$upper->{content}};
+        $intbox->{height} += $upper->{height};
+        $intbox->{head}   += $upper->{height};
+    }
+    if ($lower) {
+        hpad($lower, $intbox);
+        push @{$intbox->{content}}, @{$lower->{content}};
+        $intbox->{height} += $lower->{height};
+        $intbox->{foot}   += $lower->{height};
+    }
+
+    return boxify($intbox, $arg);
+}
+
 
 1;
 
