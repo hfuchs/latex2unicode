@@ -223,22 +223,18 @@ sub handle_int {
     my ($upper, $lower) = find_limits($str);
     my $arg             = find_block($str);
 
-    my @content;
-    my $intbox = {
-        width => 1,
-        height => $arg->{height},
-        head => $arg->{head},
-        foot => $arg->{foot},
-    };
+    my $intbox = make_unity_box( "\x{222B}" );
 
-    if ($arg->{height} == 1) {
-        @content = ( "\x{222B}" );
-    } else {
+    if ($arg->{height} != 1) {
+        my @content;
         push @content, "\x{256d}";
         push @content, "\x{2502}" foreach (1 .. ($arg->{height}-2));
         push @content, "\x{256f}";
+        $intbox->{content} = \@content;
     }
-    $intbox->{content} = \@content;
+    $intbox->{head}    = $arg->{head};
+    $intbox->{foot}    = $arg->{foot};
+    normalize_box($intbox);
 
     # TODO Make a vboxify function from these lines.
     if ($upper) {
@@ -264,18 +260,12 @@ sub handle_sum {
     my ($upper, $lower) = find_limits($str);
     my $arg             = find_block($str);
 
-    my @content;
-    my $intbox = {  # TODO Could I not have used make*whatever*box()?
-        width => 1,
-        height => $arg->{height},
-        head => $arg->{head},
-        foot => $arg->{foot},
-    };
+    # Feeling clever, I create an initial box that already contains the
+    # proper sign for the "height == 1" case and only afterwards
+    # construct a larger sign if necessary.
+    my $sumbox = make_unity_box( "\x{03A3}" );
 
-    if ($arg->{height} == 1) {
-        @content = ( "\x{03A3}" );
-    } else {
-        #} elsif ($arg->{height} % 2 == 0) {  # Even.  Duh!
+    if ($arg->{height} != 1) {
         # 2014-01-26, How Do I draw a life-sized sigma?
         # 2014-01-27, With characters from Misc Technical (2300—23FF).
         # 1  -> Σ
@@ -298,36 +288,34 @@ sub handle_sum {
         # 2 == 1), because of my "baseline" concept.
         # TODO btw: I got confused by those concepts: write an outline!
         #
+        my @content;
         push @content, "\x{23BD}"x4; # TODO Depends on height as well!
-        push @content, "\x{2572}   ";
-        push @content, ">  ";  # TODO Can't use \x{232a} for space-gobbling reasons!
-        push @content, "\x{2571}   ";
+        push @content, "\x{2572}";
+        push @content, " >";          # TODO Can't use \x{232a} for space-gobbling reasons!
+        push @content, "\x{2571}";
         push @content, "\x{23BA}"x4;
-        # TODO I *must* have a function somewhere around here that
-        # - gasp! - calculates these values from the content (except for
-        # head'n'foot, of course).
-        $intbox->{height}  = 5;
-        $intbox->{width}   = 4;
-        $intbox->{foot}    = 2;
-        $intbox->{head}    = 2;
+
+        $sumbox->{content} = \@content;
+        normalize_box($sumbox);
+        $sumbox->{foot} = 2;  # TODO normalize_box() could conceivably do this, too.
+        $sumbox->{head} = 2;
     }
-    $intbox->{content} = \@content;
 
     # TODO Make a vboxify function from these lines.
     if ($upper) {
-        hpad($upper, $intbox);
-        unshift @{$intbox->{content}}, @{$upper->{content}};
-        $intbox->{height} += $upper->{height};
-        $intbox->{head}   += $upper->{height};
+        hpad($upper, $sumbox);
+        unshift @{$sumbox->{content}}, @{$upper->{content}};
+        $sumbox->{height} += $upper->{height};
+        $sumbox->{head}   += $upper->{height};
     }
     if ($lower) {
-        hpad($lower, $intbox);
-        push @{$intbox->{content}}, @{$lower->{content}};
-        $intbox->{height} += $lower->{height};
-        $intbox->{foot}   += $lower->{height};
+        hpad($lower, $sumbox);
+        push @{$sumbox->{content}}, @{$lower->{content}};
+        $sumbox->{height} += $lower->{height};
+        $sumbox->{foot}   += $lower->{height};
     }
 
-    return boxify($intbox, $arg);
+    return boxify($sumbox, $arg);
 }
 
 
