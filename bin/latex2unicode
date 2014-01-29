@@ -9,6 +9,7 @@ use Encode;
 #use charnames ':full'; # "\N{WHITE SMILING FACE}";
 #use Data::Dumper;
 use POSIX qw(floor);
+use List::Util qw/max/;
 
 # My Modules
 use lib qw/lib/;
@@ -200,6 +201,23 @@ sub boxify {
     };
 
     return $box;
+}
+
+sub normalize_box {
+    # normalize_box tries to make box content and specs agree with each
+    # other.
+    D("> normalize_box");
+    my $box = shift;  # box-ref.
+
+    # Calculate real width and height and pad the content.
+    $box->{width}  = max map { length $_ } @{$box->{content}};
+    $box->{height} = scalar @{$box->{content}};
+
+    hpad("left", $box);
+
+    # TODO foot'n'head!
+
+    return 1;  # TODO Error checking.
 }
 
 sub vpad {
