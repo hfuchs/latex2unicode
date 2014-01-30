@@ -66,66 +66,8 @@ sub expand {
             # concept: their handlers need to know what block went
             # *before*.  TODO Are there more of these?
             when (/(_|\^)/) {
-                # TODO Move this part into a separate handler!
                 unshift @str, $_;
-
-                my ($upper, $lower) = find_limits(\@str);
-                # TODO The following lines become obsolete when
-                # find_limits() returns empty boxes.
-                $upper = make_empty_box() unless ($upper);
-                $lower = make_empty_box() unless ($lower);
-                #say STDERR Dumper($upper, $lower);
-
-                my ($min_head, $min_foot) = (0, 0);
-                if (not defined $stack[-1]) {
-                    say STDERR "No block before '^' sign?";
-                } else {
-                    $min_head = $stack[-1]->{head};
-                    $min_foot = $stack[-1]->{foot};
-                }
-                #say STDERR "mins: $min_head, $min_foot";
-
-                my $box;
-
-                if (my $super = is_superscriptable($upper) and
-                    $min_head == 0 and
-                    is_empty_box($lower)
-                ) {
-                    $box = {
-                        content => [ $super ],
-                        width   => 1,  height => 1,
-                        foot    => 0,  head    => 0,
-                    };
-                } elsif (
-                    my $sub = is_subscriptable($lower) and
-                    $min_foot == 0 and
-                    is_empty_box($upper)
-                    #$equation_is_simple
-                ) {
-                    $box = {
-                        content => [ $sub ],
-                        width => 1, height => 1,
-                        foot => 0, head => 0,
-                    };
-                } else {
-                    my $width = hpad('left-aligned', $upper, $lower);
-                    my @content = ();
-                    push @content, @{$upper->{content}};
-                    foreach my $i (0 .. $min_head+$min_foot) {
-                        push @content, " " x $width;
-                    }
-                    push @content, @{$lower->{content}};
-
-                    $box = {
-                        content => \@content,
-                        width   => $width,
-                        height  => scalar(@content),
-                        foot    => $min_foot + $lower->{height},
-                        head    => $min_head + $upper->{height},
-                    };
-                }
-
-                push @stack, $box;
+                push @stack, process_fooscript(\@stack, \@str);
             }
             when (/{/) {
                 # TODO Another kludge: Putting the curly brace back...
@@ -355,6 +297,61 @@ sub process_macro {
     }
 
     return handle($cmd, $str);
+}
+
+sub process_fooscript {
+    D("> process_fooscript");
+
+    my $stack = shift;  # Both references.
+    my $str   = shift;
+
+    my ($upper, $lower) = find_limits($str);
+    # TODO The following lines become obsolete when
+    # find_limits() returns empty boxes.
+    $upper = make_empty_box() unless ($upper);
+    $lower = make_empty_box() unless ($lower);
+
+    my ($min_head, $min_foot) = (0, 0);
+    if (not defined $stack->[-1]) {
+        say STDERR "No block before '^' sign?";
+    } else {
+        $min_head = $stack->[-1]->{head};
+        $min_foot = $stack->[-1]->{foot};
+    }
+
+    my $box;
+
+    if (my $super = is_superscriptable($upper) and
+        $min_head == 0 and
+        is_empty_box($lower)
+    ) {
+        $box = make_unity_box( $super );
+    } elsif (
+        my $sub = is_subscriptable($lower) and
+        $min_foot == 0 and
+        is_empty_box($upper)
+        #$equation_is_simple
+    ) {
+        $box = make_unity_box( $sub );
+    } else {
+        my $width = hpad('left-aligned', $upper, $lower);
+        my @content = ();
+        push @content, @{$upper->{content}};
+        foreach my $i (0 .. $min_head+$min_foot) {
+            push @content, " " x $width;
+        }
+        push @content, @{$lower->{content}};
+
+        $box = {
+            content => \@content,
+            width   => $width,
+            height  => scalar(@content),
+            foot    => $min_foot + $lower->{height},
+            head    => $min_head + $upper->{height},
+        };
+    }
+
+    return $box;
 }
 
 sub find_limits {
