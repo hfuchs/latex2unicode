@@ -394,31 +394,13 @@ sub find_block {
         shift @$str;
         return process_macro($str); # TODO Could test whether '\' exists.
     } else { # Real block begins
-        my $block = '';
-        my $depth = 0;
-
-        while (scalar(@$str)) {
-            my $char = shift @$str;
-            given ($char) {
-                when (/\{/) {
-                    # Put only nested opening blocks on the stack.
-                    $block .= $char if ($depth > 0);
-                    $depth++;
-                }
-                when (/\}/) {
-                    $depth--;
-                    $block .= $char if ($depth > 0);
-                    last if ($depth == 0);
-                }
-                default { $block .= $char }
-            }
-        }
-        return expand($block);
+        return expand(stackautomaton($str, '{', '}'));
     }
 }
 
 sub find_ext_block {
     # TODO Adding experimental support for \left, \right blocks...
+    # TODO Isn't that what stackautomaton()'s already doing?
     my $str   = shift;  # Reference.
     my $begin = ( @_ ? quotemeta(shift) : '{' ); # Possible values: '('
     my $end   = ( @_ ? quotemeta(shift) : '}' ); # Possible values: '\right)'
@@ -444,21 +426,39 @@ sub find_ext_block {
 
 sub find_option {
     # TODO Belongs into the parser section!
-    my $str    = shift;  # Reference.
-    my $string = join('', @$str);
-    D("> find_option [$string]");
+    my $str   = shift;  # Reference.
 
-    if ( $string =~ /^\[(.*?)\](.*)$/ ) {
-        my $box = make_unity_box();
+    D('> find_option [' . join('', @$str) . ']');
 
-        @$str = split(//, $2);
-        $box->{content}->[0] = $1;
-        $box->{width}        = length($1);
+    return make_empty_box if $str->[0] ne "[";
 
-        return $box; # TODO Check, that it's a simple number!
-    } else {
-        return make_empty_box();
+    return expand(stackautomaton($str, '[', ']'));
+}
+
+sub stackautomaton {
+    my $str   = shift;
+    my $open  = quotemeta(shift);
+    my $close = quotemeta(shift);
+
+    my $block = '';
+    my $depth = 0;
+
+    while (scalar(@$str)) {
+        my $char = shift @$str;
+        given ($char) {
+            when (/$open/) {
+                # Put only nested opening blocks on the stack.
+                $block .= $char if ($depth++ > 0);
+            }
+            when (/$close/) {
+                $block .= $char if (--$depth > 0);
+                last if ($depth == 0);
+            }
+            default { $block .= $char }
+        }
     }
+
+    return $block;
 }
 
 # Input
