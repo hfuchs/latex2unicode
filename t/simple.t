@@ -12,10 +12,14 @@ my %good   = (
     '1+1=2'           => "1+1=2",
     '2  +1 =3'        => "2+1=3",
     '\alpha'          => "α",
-    '2\cdot\Omega-7'  => "2·Ω-7",
-    '1\times2'        => "1×2",
+    '2\cdot\Omega-7'  => "2⋅Ω-7",
+    '1\times2'        => "1⨯2",
     '\propto\infty'   => "∝∞",
     '\aleph\equiv'    => 'ℵ≡',
+    '1\ast 2 \Box \notin\langle f \mid \cdot\times\mapsto\ast\times\Im\Re\rangle\perp' =>
+    '1∗2□∉⟨f∣⋅⨯↦∗⨯ℑℜ⟩⟂',
+
+
 );
 
 while (my ($in, $out) = each %good) {

@@ -20,12 +20,14 @@ my %good   = (
     "E=mc²",
 
     # Lagrange Identity
-    '(\vec{a}\times\vec{b})\cdot(\vec{c}\times\vec{d}) = (\vec{a}\cdot\vec{c})(\vec{b}\cdot\vec{d}) - (\vec{b}\cdot\vec{c})(\vec{a}\cdot\vec{d})' =>
-    "(a⃗×b⃗)·(c⃗×d⃗)=(a⃗·c⃗)(b⃗·d⃗)-(b⃗·c⃗)(a⃗·d⃗)",
+    '(\vec{a}\times\vec{b})\cdot(\vec{c}\times\vec{d}) = '.
+    '(\vec{a}\cdot\vec{c})(\vec{b}\cdot\vec{d}) - '.
+    '(\vec{b}\cdot\vec{c})(\vec{a}\cdot\vec{d})' =>
+    '(a⃗⨯b⃗)⋅(c⃗⨯d⃗)=(a⃗⋅c⃗)(b⃗⋅d⃗)-(b⃗⋅c⃗)(a⃗⋅d⃗)',
 
     # Graßmann Identity
     '\vec{a}\times(\vec{b}\times\vec{c}) = \vec{b}(\vec{a}\cdot\vec{c})\,-\,\vec{c}(\vec{a}\cdot\vec{b})' =>
-    "a⃗×(b⃗×c⃗)=b⃗(a⃗·c⃗) - c⃗(a⃗·b⃗)",
+    'a⃗⨯(b⃗⨯c⃗)=b⃗(a⃗⋅c⃗) - c⃗(a⃗⋅b⃗)',
 
     # Period of a compound pendulum
     'T=2\pi\sqrt{\frac{J}{mgd}}' =>

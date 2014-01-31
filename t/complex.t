@@ -25,18 +25,27 @@ my %good   = (
 
     # BrightMare fails at this one
     '\vec{m}=\frac12\int{d^3r \vec{r}\times\vec{j}(\vec{r})}' =>
-    "   1           \nm⃗=╶─╴∫d³rr⃗×j⃗(r⃗)\n   2           ",
+    "   1           \n".
+    "m⃗=╶─╴∫d³rr⃗⨯j⃗(r⃗)\n".
+    "   2           ",
 
     '\sqrt[4]{\frac12}' =>
     " ╭───\n │ 1 \n4│╶─╴\n╶╯ 2 ",
 
     '\sqrt[14]{\frac{12}{32\cdot a_4}}' =>
-    "  ╭───────\n  │   12  \n14│╶─────╴\n ╶╯ 32·a₄ ",
+    "  ╭───────\n  │   12  \n14│╶─────╴\n ╶╯ 32⋅a₄ ",
 
     # 2010-04-17, Most tests with vectors lie - the combining char eats space!
     # 2014-01-24, Not anymore!  Logical length() saves the test, once again.
     '\int_{i=1}^\infty{\sqrt[14]{\int_{-\infty}^0{dx^3\frac{12\vec{x}}{32\cdot a_4}}}}' =>
-    " ∞                \n ╭   ╭────────────\n │   │ 0          \n │   │ ╭     12x⃗  \n │   │ │dx³╶─────╴\n │ 14│ ╯    32·a₄ \n ╯  ╶╯-∞          \ni=1               ",
+    " ∞                \n".
+    " ╭   ╭────────────\n".
+    " │   │ 0          \n".
+    " │   │ ╭     12x⃗  \n".
+    " │   │ │dx³╶─────╴\n".
+    " │ 14│ ╯    32⋅a₄ \n".
+    " ╯  ╶╯-∞          \n".
+    "i=1               ",
 
     '\int\frac12\vec{x}' =>
     "╭ 1  \n│╶─╴x⃗\n╯ 2  ",
