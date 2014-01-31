@@ -54,19 +54,69 @@ my %chars = (
     'psi'      => "\x{03C8}",
     'omega'    => "\x{03C9}",
     # Number Chars
+    'Re'       => "\x{211c}",
+    'Im'       => "\x{2111}",
     'aleph'    => "\x{2135}",
+    'to'       => "\x{2192}",
+    'mapsto'   => "\x{21a6}",
     'imath'    => "\x{131}", # "\x{E64E}",
     'hbar'     => "\x{127}", # "\x{E2D5}", italic: \x{210F}, capital: \x{126}
-    # Operators
-    'times'    => "\x{d7}",
-    'cdot'     => "\x{b7}",
+    # Operators, Signs & Relations
+    # https://en.wikipedia.org/wiki/Mathematical_Operators
+    # http://www.artofproblemsolving.com/Wiki/index.php/LaTeX:Symbols#Operators
+    # http://fakten-uber.de/liste_mathematischer_symbole
+    'forall'   => "\x{2201}",
     'partial'  => "\x{2202}",
+    'exists'   => "\x{2203}",
+    'emptyset' => "\x{2205}",
+    'nabla'    => "\x{2207}",
+    #'in'       => "\x{2208}",  # Or 220a?
+    # TODO With my current parser, this will mask infty and int!
+    'notin'    => "\x{2209}",
+    'sqcup'    => "\x{2210}",
+    'ast'    => "\x{2217}",
+    #'sum'     => "\x{2211}",  # There's a separate handler for that.
+    #'-'       => "\x{2212}",  # Minus sign?
+    'mp'       => "\x{2213}",
+    'pm'       => "\x{00b1}",
+    # ...
+    'circ'     => "\x{2218}",
+    'bullet'   => "\x{2219}",
+    'propto'   => "\x{221d}",
+    'infty'    => "\x{221e}",
+    'mid'      => "\x{2223}",  # TODO 22c*!
+    'vert'     => "\x{2223}",  # TODO Or just 007c, |?
+    # 'Vert'?  -> 2016?
+    'parallel' => "\x{2225}",
+    'and'      => "\x{2227}",
+    'or'       => "\x{2228}",
+    'wedge'    => "\x{22c0}",
+    'vee'      => "\x{22c1}",
+    'cup'      => "\x{222a}",  # TODO 22c*?
+    'neq'      => "\x{2260}",
+    'lt'       => "\x{3c}",
+    'gt'       => "\x{3e}",
+    'leq'      => "\x{2264}",
+    'geq'      => "\x{2265}",
+    'll'       => "\x{226a}",
+    'gg'       => "\x{226b}",
+    'otimes'   => "\x{2297}",
+    'oplus'    => "\x{2295}",
+    'cdot'     => "\x{22C5}",
+    'times'    => "\x{2A2F}",
+    'Box'      => "\x{25a1}",  # TODO Box?
+    'square'   => "\x{25a1}",
+    # TODO What block is this?
+    'perp'     => "\x{27C2}",
+    'langle'   => "\x{27E8}",
+    'rangle'   => "\x{27E9}",
     # Signs
-    'infty'      => "\x{221e}",
-    'propto'     => "\x{221d}",
+    'approx'     => "\x{2248}",
     'equiv'      => "\x{2261}",
     'll'         => "\x{226a}",
     'gg'         => "\x{226b}",
+    'dagger'     => "\x{2020}",  # TODO Isn't there a superscript version?
+    'ddagger'    => "\x{2021}",
     'ldots'      => "\x{2026}",
     'leftarrow'  => "\x{2190}",
     'Leftarrow'  => "\x{21D0}",
