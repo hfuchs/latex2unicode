@@ -17,24 +17,21 @@ sub handle {
     given($cmd) {
         # TODO This should be a hash table.
         when (/,/)     { $box = handle_comma($str) }
-        when (/bar/)   { $box = handle_bar($str) }
-        when (/vec/)   { $box = handle_vec($str) }
-        when (/hat/)   { $box = handle_hat($str) }
-        when (/dot/)   { $box = handle_dot($str) }
-        when (/sqrt/)  { $box = handle_sqrt($str) }
-        when (/frac/)  { $box = handle_frac($str) }
-        # TODO handle_{power,sub} no longer exist!
-        #when (/power/) { $box = handle_power($str, $stack) }
-        #when (/sub/)   { $box = handle_sub($str, $stack) }
-        when (/int/)         { $box = handle_int($str) }
-        when (/sum/)         { $box = handle_sum($str) }
-        when (/mathrm|rm/)   { $box = handle_dummy($str) }
-        # TODO Handle \mathbb differently!  See
+        when (/^bar$/)   { $box = handle_bar($str) }
+        when (/^vec$/)   { $box = handle_vec($str) }
+        when (/^hat$/)   { $box = handle_hat($str) }
+        when (/^dot$/)   { $box = handle_dot($str) }
+        when (/^sqrt$/)  { $box = handle_sqrt($str) }
+        when (/^frac$/)  { $box = handle_frac($str) }
+        when (/^int$/)         { $box = handle_int($str) }
+        when (/^sum$/)         { $box = handle_sum($str) }
+        # TODO Handle fonts, eg. \mathbb, differently!  See
         # <http://en.wikipedia.org/wiki/Blackboard_bold>.
-        when (/mathbf/)      { $box = handle_dummy($str) }
-        when (/langle/)      { $box = handle_langle($str) }
+        when (/^(mathrm|rm)$/)   { $box = handle_dummy($str) }
+        when (/^mathbf$/)      { $box = handle_dummy($str) }
+        when (/^langle$/)      { $box = handle_langle($str) }
         # TODO Just repressing the endtoken seems lame...
-        when (/rangle/)      { $box = handle_dummy($str) }
+        when (/^rangle$/)      { $box = handle_dummy($str) }
         # TODO More generic:
         #when (/left/)        { $box = handle_left($str) }
         default      { die "Unknown command [$_].  Can't handle." }
