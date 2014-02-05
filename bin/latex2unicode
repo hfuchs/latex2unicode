@@ -26,7 +26,7 @@ my $DEBUG = 1 if $ENV{DEBUG};
 my $input = decode_utf8 join ' ', @ARGV;
 
 # This is it.  That's latex2unicode, ladies'n'gentlemen.
-pretty_print(expand(substitute_chars(normalize_input($input))));
+pretty_print(expand(densify(substitute_chars(normalize_input($input)))));
 
 # -- Subroutines
 # ----------------------------------------------------------------------
@@ -461,14 +461,21 @@ sub stackautomaton {
     return $block;
 }
 
-# Input
-sub normalize_input { # TODO _Very_ dangerous: '\times a' -> '\timesa'
+# normalize_input() and densify() are closely related.
+sub normalize_input {
     D("> normalize_intput");
     my $in = shift;
 
-    # TODO Introduce 'spacious' option!
-    #$in =~ s/\s{2,}/ /g;  # Using this line will break /many/ tests!
-    $in =~ s/\s//g;
+    $in =~ s/\s{2,}/ /g;
+
+    return $in;
+}
+
+sub densify {
+    D("> densify");
+    my $in = shift;
+
+    $in =~ s/\s//g;   # TODO Introduce 'spacious' option!
 
     return $in;
 }
@@ -480,7 +487,10 @@ sub substitute_chars {
     my $chars = get_primitive_chars;
 
     while (my ($tex, $code) = each %$chars) {
-        $in =~ s/\\$tex/$code/g;
+        # The following look-ahead expression is supposed to be
+        # a safe-guard against 'in' matching the macro '\int'.
+        # I'll probably run into trouble with this.  Soon.
+        $in =~ s|\\$tex(?![a-z])|$code|g;
     }
 
     return $in;
