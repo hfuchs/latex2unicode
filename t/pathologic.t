@@ -12,6 +12,16 @@ my %good   = (
     # should I care?  So, for now, this is a feature; not a bug.
     'x^2^3'    => "x²³",
     '{x}'      => "x",
+    '\frac{1} {2}' =>
+" 1 \n".
+"╶─╴\n".
+" 2 ",
+    # 2014-02-07, I know!  Try it!  pdflatex does it.
+    '\frac{1} {x^  2}' =>
+"  1 \n".
+"╶──╴\n".
+" x² ",
+
 );
 
 while (my ($in, $out) = each %good) {

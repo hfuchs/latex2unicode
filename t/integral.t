@@ -9,6 +9,7 @@ my $l2u    = './bin/latex2unicode';
 
 my %good   = (
     '\int1'    => "∫1",
+    '\int x'   => "∫x",
     '\int{\frac{1}{\Omega^2}' => "╭  1 \n│╶──╴\n╯ Ω² ",
     '\sum_{n=0}^\infty{\frac{3\sqrt{n}}{2}}' =>
     "  ∞      \n".
