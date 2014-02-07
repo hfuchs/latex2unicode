@@ -128,6 +128,12 @@ my %chars = (
     # TODO These two need to handle arguments.
     #'cos'  => "cos",
     #'sin'  => "sin",
+    # Math-mode spaces
+    # TODO I have handlers for those!  Which is it?
+    ';'        => "  ",        # thick space
+    ':'        => " ",         # medium space
+    ','        => " ",         # thin space
+    '!'        => "",          # negative thin space - simply ignored
 );
 
 my %superscripts = (
