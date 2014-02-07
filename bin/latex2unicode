@@ -438,19 +438,23 @@ sub stackautomaton {
 
 # normalize_input() and densify() are closely related.
 sub normalize_input {
-    D("> normalize_intput");
     my $in = shift;
+    D("> normalize_input [" . $in . "]");
 
-    $in =~ s/\s{2,}/ /g;
+    $in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g;
+    $in =~ s|\\([;:!,])|\\$1\{\}|g;      # TODO Top-off-my-head character list.
+    $in =~ s/\s{1,}//g;
+
+    D(">      ...        [" . $in . "]");
 
     return $in;
 }
 
 sub densify {
-    D("> densify");
     my $in = shift;
+    D("> densify [" . $in . "]");
 
-    $in =~ s/\s//g;   # TODO Introduce 'spacious' option!
+    #$in =~ s/\s//g;   # TODO Introduce 'spacious' option!
 
     return $in;
 }
