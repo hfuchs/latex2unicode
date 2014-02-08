@@ -18,15 +18,22 @@ use L2U::Constants;
 use L2U::Handlers;
 #use L2U::Logger;  # TODO No such thing!
 
-my $DEBUG = 1 if $ENV{DEBUG};
+my $DEBUG    = 1 if $ENV{DEBUG};
+my $MATHMODE = undef;
 
 # -- Main
 # ----------------------------------------------------------------------
 
+# Remove options from ARGV, then read the input string.
+# TODO Read from file!
+use Getopt::Long;
+GetOptions('debug' => \$DEBUG,
+           'math'  => \$MATHMODE);
+
 my $input = decode_utf8 join ' ', @ARGV;
 
 # This is it.  That's latex2unicode, ladies'n'gentlemen.
-pretty_print(expand(densify(substitute_chars(normalize_input($input)))));
+pretty_print(expand(massage_input($input)));
 
 # -- Subroutines
 # ----------------------------------------------------------------------
@@ -48,7 +55,6 @@ sub expand {
     #
     # TODO PODify documentation.
     # TODO Allow for arrays to be passed.
-    # TODO Much too huge.
     my @str = split //, shift;
     my @stack;
     D("> expand [" . join('', @str). "]");
@@ -57,6 +63,9 @@ sub expand {
         given (shift @str) {
             when (is_primitive($_)) {
                 push @stack, make_unity_box($_);
+            }
+            when (/\$/) { # Math mode!
+                push @stack, process_math(\@str);
             }
             when (/\\/) { # Encountered macro sign, find handler.
                 push @stack, process_macro(\@str);
@@ -236,7 +245,7 @@ sub is_primitive {
     my $char = shift;
 
     if (defined $char and length($char) == 1) {
-        return ($char =~ /(\{|\}|\\|\^|_)/ ? '' : 1);
+        return ($char =~ /(\{|\}|\$|\\|\^|_)/ ? '' : 1);
     } else {
         return 0;
     }
@@ -285,6 +294,19 @@ sub is_subscriptable {
     } else {
         return 0;
     }
+}
+
+sub process_math {
+    my $str = shift; # reference
+    my $cmd;
+    D('> process_math');
+
+    while ($str->[0] !~ /\$/) {  # TODO look-behind for '\$'!
+        $cmd .= shift @$str;
+    }
+    shift @$str if $str->[0] == '$';
+
+    return expand(substitute_chars(normalize_input($cmd)));
 }
 
 # Macro Handler Functions (Content)
@@ -411,9 +433,10 @@ sub find_option {
 }
 
 sub stackautomaton {
-    my $str   = shift;
-    my $open  = quotemeta(shift);
-    my $close = quotemeta(shift);
+    my $str      = shift;
+    my $open     = quotemeta(shift);
+    my $close    = quotemeta(shift);
+    #my $nestable = shift;  # TODO Handle math mode, too!
 
     my $block = '';
     my $depth = 0;
@@ -436,6 +459,17 @@ sub stackautomaton {
     return $block;
 }
 
+sub massage_input {
+    my $in = shift;
+    D("> massage_input [" . $in . "]");
+
+    $in =~ s/\s{1,}/ /g;
+    $in = '$'.$in.'$' if $MATHMODE;
+
+    D(">      ...        [" . $in . "]");
+
+    return $in;
+}
 # normalize_input() and densify() are closely related.
 sub normalize_input {
     my $in = shift;
