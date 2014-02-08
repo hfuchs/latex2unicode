@@ -5,7 +5,7 @@ use Test::More 'no_plan';
 use Data::Dumper;
 use Encode;
 
-my $l2u    = './bin/latex2unicode';
+my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
     '\int^3_{4a_234}' => "  3  \n  ∫  \n4a₂34",

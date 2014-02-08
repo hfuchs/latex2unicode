@@ -5,7 +5,7 @@ use Test::More 'no_plan';
 use Data::Dumper;
 use Encode;
 
-my $l2u    = './bin/latex2unicode';
+my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
     # 2014-01-26, Importing 'test/0' from the brightmare-0.34.2

@@ -6,7 +6,7 @@ use Test::More 'no_plan';
 use Data::Dumper;
 use Encode;
 
-my $l2u    = './bin/latex2unicode';
+my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
     '1+1=2'           => "1+1=2",
