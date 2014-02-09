@@ -10,6 +10,7 @@ my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
     '1+1=2'           => "1+1=2",
+    '\rightarrow'     => "→",
     '2  +1 =3'        => "2+1=3",
     '\alpha'          => "α",
     '2\cdot\Omega-7'  => "2⋅Ω-7",
