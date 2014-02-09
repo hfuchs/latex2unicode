@@ -18,8 +18,9 @@ use L2U::Constants;
 use L2U::Handlers;
 #use L2U::Logger;  # TODO No such thing!
 
-my $DEBUG    = 1 if $ENV{DEBUG};
-my $MATHMODE = undef;
+my $DEBUG     = 1 if $ENV{DEBUG};
+my $MATHMODE  = undef;
+my $TEXTWIDTH = 72;
 
 # -- Main
 # ----------------------------------------------------------------------
@@ -27,8 +28,10 @@ my $MATHMODE = undef;
 # Remove options from ARGV, then read the input string.
 # TODO Read from file!
 use Getopt::Long;
-GetOptions('debug' => \$DEBUG,
-           'math'  => \$MATHMODE);
+GetOptions('debug'        => \$DEBUG,
+           'math'         => \$MATHMODE,
+           'textwidth:i'  => \$TEXTWIDTH,
+       );
 
 my $input = decode_utf8 join ' ', @ARGV;
 
@@ -43,7 +46,85 @@ sub pretty_print {
     my $box = shift; # reference
     D("> pretty_print");
 
-    say encode_utf8 $_ foreach @{$box->{content}};
+    my $boxes = [ $box ];  # 'lines' basically.
+
+    if ( $box->{width} > $TEXTWIDTH ) {
+        $boxes = split_box( $box, $TEXTWIDTH );
+    }
+
+    foreach my $box ( @$boxes ) {
+        slim_box( $box );
+        say encode_utf8 $_ foreach @{$box->{content}};
+    }
+}
+
+sub split_box {
+    D("> split_box");
+    my $box       = shift;
+    my $textwidth = shift;
+
+    my $boxes  = [];
+    my @spaces = find_splits( $box );
+    my $split  = max grep { $_ < $textwidth } @spaces;
+
+    D("  ...  possible splits at: " .  join( " ", sort @spaces ));
+    D("  ...  nearest split below $textwidth: " . $split);
+
+    my $shortbox = clone_box( $box );
+    my $tailbox  = clone_box( $box );
+
+    $shortbox->{content} = undef;
+    $tailbox->{content}  = undef;
+
+    foreach my $line (@{$box->{content}}){
+        push @{$shortbox->{content}}, substr $line, 0, $split;
+        push @{$tailbox->{content}},  substr $line, $split+1;
+    }
+    $shortbox->{width} = $split + 1;
+    $tailbox->{width}  = $box->{width} - $split - 2;
+
+    push @$boxes, $shortbox;
+
+    # Happy recursing!
+    if ( $tailbox->{width} > $textwidth ) {
+        push @$boxes, @{split_box( $tailbox, $textwidth )};
+    } else {
+        push @$boxes, $tailbox;
+    }
+
+    return $boxes;
+}
+
+
+sub find_splits {
+    D("> find_splits");
+    my $box = shift;
+
+    # Here's a bit of explanation.  I'll traverse each line of the box's
+    # content and save the positions of spaces (in %spaces).  Apart from
+    # the ususal use-Perl-hashes-where-bitmaps-would-be-appropriate
+    # trick, I also delete all hash elements where the current string
+    # doesn't have spaces. . . See?  So, in the end only those positions
+    # that have spaces in all content lines will remain as keys in the
+    # %spaces hash.  Probably not as convoluted as it seems to me.
+
+    my %spaces;
+
+    foreach my $line (@{$box->{content}}) {
+        my $offset = 0;
+        while ( $offset < length $line ) {
+            $spaces{$offset}++ if substr( $line, $offset, 1 ) eq " ";
+            $offset++;
+        }
+    }
+
+    my $max = max values %spaces;  # Could've used $box->{height}.
+
+    foreach ( keys %spaces ) {
+        delete $spaces{$_} unless $spaces{$_} == $max;
+    }
+
+    return keys %spaces;
 }
 
 # Parser
@@ -118,6 +199,19 @@ sub make_empty_box {
     return $box;
 }
 
+sub clone_box {
+    D("> clone_box");
+    my $origbox = shift;
+    my $newbox  = make_empty_box();
+
+    @{$newbox->{content}} = @{$origbox->{content}};
+    foreach my $stat (qw|width height head foot|) {
+        $newbox->{$stat} = $origbox->{$stat};
+    }
+
+    return $newbox;
+}
+
 sub boxify {
     D("> boxify");
     my @boxes = @_; # List of references.
@@ -152,6 +246,24 @@ sub boxify {
     };
 
     return $box;
+}
+
+sub slim_box {
+    D("> slim_box");
+    my $box = shift;
+
+    while ( $box->{content}->[0] =~ /^\s*$/ ) {
+        shift @{$box->{content}};
+        $box->{head} > 0 ? $box->{head}-- : 0 ;
+        $box->{height}--;
+    }
+    while ( $box->{content}->[-1] =~ /^\s*$/ ) {
+        pop @{$box->{content}};
+        $box->{foot} > 0 ? $box->{foot}-- : 0 ;
+        $box->{height}--;
+    }
+
+    return 1;
 }
 
 sub normalize_box {
@@ -306,7 +418,7 @@ sub process_math {
     }
     shift @$str if $str->[0] == '$';
 
-    return expand(substitute_chars(normalize_input($cmd)));
+    return expand(substitute_chars(normalize_math($cmd)));
 }
 
 # Macro Handler Functions (Content)
@@ -470,25 +582,17 @@ sub massage_input {
 
     return $in;
 }
-# normalize_input() and densify() are closely related.
-sub normalize_input {
+
+# TODO normalize_math and substitute_chars could become one function.
+sub normalize_math {
     my $in = shift;
-    D("> normalize_input [" . $in . "]");
+    D("> normalize_math [" . $in . "]");
 
     $in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g;
     $in =~ s|\\([;:!,])|\\$1\{\}|g;      # TODO Top-off-my-head character list.
     $in =~ s/\s{1,}//g;
 
     D(">      ...        [" . $in . "]");
-
-    return $in;
-}
-
-sub densify {
-    my $in = shift;
-    D("> densify [" . $in . "]");
-
-    #$in =~ s/\s//g;   # TODO Introduce 'spacious' option!
 
     return $in;
 }
