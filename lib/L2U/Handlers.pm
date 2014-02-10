@@ -16,7 +16,6 @@ sub handle {
 
     given($cmd) {
         # TODO This should be a hash table.
-        when (/,/)     { $box = handle_comma($str) }
         when (/^bar$/)   { $box = handle_bar($str) }
         when (/^vec$/)   { $box = handle_vec($str) }
         when (/^hat$/)   { $box = handle_hat($str) }
@@ -181,11 +180,6 @@ sub handle_bar {
     my $char = find_block($str);
     $char->{content}->[0] = $char->{content}->[0] . "\x{0305}";
     return $char;
-}
-
-sub handle_comma {
-    D("> handle_comma");
-    return make_unity_box(' ');
 }
 
 sub handle_frac {
