@@ -138,7 +138,7 @@ sub expand {
     # TODO Allow for arrays to be passed.
     my @str = split //, shift;
     my @stack;
-    D("> expand [" . join('', @str). "]");
+    D("> expand              [" . join('', @str). "]");
 
     while (@str) {
         given (shift @str) {
@@ -353,8 +353,9 @@ sub hpad {
 }
 
 sub is_primitive {
-    D("> is_primitive");
     my $char = shift;
+
+    D("> is_primitive        [" . $char . "]");
 
     if (defined $char and length($char) == 1) {
         return ($char =~ /(\{|\}|\$|\\|\^|_)/ ? '' : 1);
@@ -408,11 +409,12 @@ sub is_subscriptable {
     }
 }
 
+# TODO *Very* similar to process_macro().
 sub process_math {
     my $str = shift; # reference
-    my $cmd;
-    D('> process_math');
+    D('> process_math        [' . join('', @$str) . ']');
 
+    my $cmd;
     while ($str->[0] !~ /\$/) {  # TODO look-behind for '\$'!
         $cmd .= shift @$str;
     }
@@ -424,9 +426,9 @@ sub process_math {
 # Macro Handler Functions (Content)
 sub process_macro {
     my $str = shift; # reference
-    my $cmd;
-    D('> process_macro');
+    D('> process_macro       [' . join('', @$str) . ']');
 
+    my $cmd;
     while ($str->[0] =~ /[,a-zA-Z]/) {
         $cmd .= shift @$str;
     }
@@ -519,9 +521,9 @@ sub find_block {
     # TODO Belongs into the parser section!
     my $str   = shift;  # Reference.
 
-    D('> find_block [' . join('', @$str) . ']');
-    my ($package, $filename, $line, $subroutine ) = caller(1);
-    D('> > caller: ' . $subroutine);
+    D('> find_block          [' . join('', @$str) . ']');
+    #my ($package, $filename, $line, $subroutine ) = caller(1);
+    #D('> > caller: ' . $subroutine);
 
     if (is_primitive($str->[0])) {
         return make_unity_box(shift @$str);
@@ -537,7 +539,7 @@ sub find_option {
     # TODO Belongs into the parser section!
     my $str   = shift;  # Reference.
 
-    D('> find_option [' . join('', @$str) . ']');
+    D('> find_option         [' . join('', @$str) . ']');
 
     return make_empty_box if $str->[0] ne "[";
 
@@ -550,9 +552,13 @@ sub stackautomaton {
     my $close    = quotemeta(shift);
     #my $nestable = shift;  # TODO Handle math mode, too!
 
+    D('> stackautomaton      [' . join('', @$str) . ']');
+    D(">     ...             (open: '$open'; close: '$close')");
+
     my $block = '';
     my $depth = 0;
 
+    # TODO Complain if unbalanced or open/close not found!
     while (scalar(@$str)) {
         my $char = shift @$str;
         given ($char) {
@@ -567,18 +573,19 @@ sub stackautomaton {
             default { $block .= $char }
         }
     }
+    D('>     ...             [' . $block . ']');
 
     return $block;
 }
 
 sub massage_input {
     my $in = shift;
-    D("> massage_input [" . $in . "]");
+    D("> massage_input       [" . $in . "]");
 
     $in =~ s/\s{1,}/ /g;
     $in = '$'.$in.'$' if $MATHMODE;
 
-    D(">      ...        [" . $in . "]");
+    D(">     ...             [" . $in . "]");
 
     return $in;
 }
@@ -586,13 +593,13 @@ sub massage_input {
 # TODO normalize_math and substitute_chars could become one function.
 sub normalize_math {
     my $in = shift;
-    D("> normalize_math [" . $in . "]");
+    D("> normalize_math      [" . $in . "]");
 
     $in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g;
     $in =~ s|\\([;:!,])|\\$1\{\}|g;      # TODO Top-off-my-head character list.
     $in =~ s/\s{1,}//g;
 
-    D(">      ...        [" . $in . "]");
+    D(">     ...             [" . $in . "]");
 
     return $in;
 }
