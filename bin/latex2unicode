@@ -286,18 +286,26 @@ sub vpad {
     # vpad, rather stupidly, pads a single box according to the box' own
     # dimensional specifications.
     D("> vpad");
-    my $foot = shift;
-    my $head = shift;
-    my $box  = shift;  # Reference
+    my $foot  = shift;     # Integers
+    my $head  = shift;
+    my $box   = shift;     # Reference
+    my $align = shift;     # Alignment: top, bottom or center (default)
+    $align = "center" unless defined $align;
 
     my $width   = $box->{width};  # TODO Calculate?
     my @content = @{$box->{content}};
 
-    while ($box->{head}++ < $head) {
-        unshift @content, " "x$width;
-    }
-    while ($box->{foot}++ < $foot) {
-        push @content, " "x$width;
+    if ( $align eq "center" ) {
+        unshift @content, " "x$width while $box->{head}++ < $head;
+        push @content, " "x$width    while $box->{foot}++ < $foot;
+    } elsif ( $align eq "top" ) {
+        push @content, " "x$width while $box->{head}++ < $head;
+        push @content, " "x$width while $box->{foot}++ < $foot;
+    } elsif ( $align eq "bottom" ) {
+        unshift @content, " "x$width while $box->{head}++ < $head;
+        unshift @content, " "x$width while $box->{foot}++ < $foot;
+    } else {
+        die "Unknown alignment: " . $align;
     }
 
     $box->{content} = \@content;
