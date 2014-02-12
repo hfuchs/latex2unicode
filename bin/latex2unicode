@@ -467,18 +467,16 @@ sub process_fooscript {
 
     my $box;
 
-    if (my $super = is_superscriptable($upper) and
-        $min_head == 0 and
-        is_empty_box($lower)
-    ) {
+    # TODO There are a few cases where I could use the dense *script
+    # form even when both parts are present (eg. 'a^2_k': no reason not
+    # to use superscript-2).
+    if ( my $super = is_superscriptable($upper) and is_empty_box($lower) ) {
         $box = make_unity_box( $super );
-    } elsif (
-        my $sub = is_subscriptable($lower) and
-        $min_foot == 0 and
-        is_empty_box($upper)
-        #$equation_is_simple
-    ) {
+        vpad( $min_head, $min_foot, $box, 'top' );
+    } elsif ( my $sub = is_subscriptable($lower) and is_empty_box($upper))
+    {
         $box = make_unity_box( $sub );
+        vpad( $min_head, $min_foot, $box, 'bottom' );
     } else {
         my $width = hpad('left-aligned', $upper, $lower);
         my @content = ();
