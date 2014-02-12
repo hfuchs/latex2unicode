@@ -36,6 +36,7 @@ my %chars = (
     'zeta'     => "\x{03B6}",
     'eta'      => "\x{03B7}",
     'theta'    => "\x{03B8}",
+    'vartheta' => "\x{03D1}",
     'iota'     => "\x{03B9}",
     'kappa'    => "\x{03BA}",
     'lambda'   => "\x{03BB}",
@@ -105,12 +106,14 @@ my %chars = (
     'gg'       => "\x{226b}",
     'otimes'   => "\x{2297}",
     'oplus'    => "\x{2295}",
+    'ominus'   => "\x{2296}",
     'cdot'     => "\x{22C5}",
     'times'    => "\x{2A2F}",
     'Box'      => "\x{25a1}",  # TODO Box?
     'square'   => "\x{25a1}",
     # TODO What block is this?
     'perp'     => "\x{27C2}",
+    # TODO Can't have scalable chars in here.
     'langle'   => "\x{27E8}",
     'rangle'   => "\x{27E9}",
     # Signs
@@ -126,8 +129,8 @@ my %chars = (
     'rightarrow' => "\x{2192}",
     'Rightarrow' => "\x{21D2}",
     # TODO These two need to handle arguments.
-    #'cos'  => "cos",
-    #'sin'  => "sin",
+    'cos'  => "cos",
+    'sin'  => 'sin',
     # Math-mode spaces
     # TODO I have handlers for those!  Which is it?
     ';'        => "  ",        # thick space
