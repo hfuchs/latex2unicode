@@ -95,7 +95,6 @@ sub split_box {
     return $boxes;
 }
 
-
 sub find_splits {
     D("> find_splits");
     my $box = shift;
@@ -167,7 +166,6 @@ sub expand {
             default { die "New character class? [@str]" }
         }
     }
-
     return boxify(@stack);
 }
 
@@ -175,7 +173,7 @@ sub expand {
 sub make_unity_box {
     my $arg = shift; # TODO Test is_one_char().
     my $box = make_empty_box();
-    D("> make_unity_box");
+    #D("> make_unity_box");
 
     $arg = ' ' unless (defined $arg);
 
@@ -194,7 +192,7 @@ sub make_empty_box {
         head    => 0,
         foot    => 0
     };
-    D("> make_empty_box");
+    #D("> make_empty_box");
 
     return $box;
 }
@@ -269,6 +267,7 @@ sub slim_box {
 sub normalize_box {
     # normalize_box tries to make box content and specs agree with each
     # other.
+    # TODO Really badly named.
     D("> normalize_box");
     my $box = shift;  # box-ref.
 
@@ -353,32 +352,34 @@ sub hpad {
 }
 
 sub is_primitive {
+    # TODO What, exactly, is a primitive character?
     my $char = shift;
 
     D("> is_primitive        [" . $char . "]");
 
     if (defined $char and length($char) == 1) {
-        return ($char =~ /(\{|\}|\$|\\|\^|_)/ ? '' : 1);
+        return ($char =~ /(\{|\}|\$|\\|\^|_)/ ? undef : 1);
     } else {
         return 0;
     }
 }
 
 sub is_empty_box {
-    D("> is_empty_box");
+    #D("> is_empty_box");
     my $box = shift;
     return 1 if ($box->{width} + $box->{height} == 0);
     return 0;
 }
 
 sub is_unit_box {
-    D("> is_empty_box");
+    #D("> is_unit_box");
     my $box = shift;
     return 1 if ($box->{width} * $box->{height} == 1);
     return 0;
 }
 
 # Character Characterisation :)
+# TODO is_fooscriptable could simply become one, no?
 sub is_superscriptable {
     D("> is_superscriptable");
     my $box = shift;
@@ -495,6 +496,8 @@ sub find_limits {
     D("> find_limits");
     # TODO Belongs into the parser section!
     my $str = shift;
+
+    # TODO Initialize as empty boxes!
     my ($upper, $lower);
 
     foreach (0 .. 1) {
@@ -525,7 +528,7 @@ sub find_block {
     #my ($package, $filename, $line, $subroutine ) = caller(1);
     #D('> > caller: ' . $subroutine);
 
-    if (is_primitive($str->[0])) {
+    if ( is_primitive( $str->[0] ) ) {
         return make_unity_box(shift @$str);
     } elsif (@$str and $str->[0] =~ /\\/) {   # TODO Create is_macro().
         shift @$str;
@@ -547,6 +550,10 @@ sub find_option {
 }
 
 sub stackautomaton {
+    # TODO At some point I'll have to think about a real parse-tree
+    # implementation to avoid these 'alf-assed crutches.  But they're so
+    # sweetly effective!
+
     my $str      = shift;
     my $open     = quotemeta(shift);
     my $close    = quotemeta(shift);
@@ -573,7 +580,8 @@ sub stackautomaton {
             default { $block .= $char }
         }
     }
-    D('>     ...             [' . $block . ']');
+    D('>     ...    inside:  [' . $block . ']');
+    D('>     ...     after:  [' . join( '', @$str ) . ']');
 
     return $block;
 }
