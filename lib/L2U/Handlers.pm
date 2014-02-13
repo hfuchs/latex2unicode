@@ -5,6 +5,7 @@ use feature qw/switch say/;
 no warnings;
 
 use L2U::Common;
+use List::Util qw/max min/;
 
 sub handle {
     my $cmd = shift; # string
@@ -12,7 +13,7 @@ sub handle {
     my $stack = shift; # optional reference
     my $box;
 
-    D("> handle [$cmd]");
+    D("> handle              [$cmd]");
 
     given($cmd) {
         # TODO This should be a hash table.
@@ -28,11 +29,8 @@ sub handle {
         # <http://en.wikipedia.org/wiki/Blackboard_bold>.
         when (/^(mathrm|rm)$/)   { $box = handle_dummy($str) }
         when (/^mathbf$/)      { $box = handle_dummy($str) }
-        when (/^langle$/)      { $box = handle_langle($str) }
-        # TODO Just repressing the endtoken seems lame...
-        when (/^rangle$/)      { $box = handle_dummy($str) }
-        # TODO More generic:
-        #when (/left/)        { $box = handle_left($str) }
+        # TODO I should balk when encountering a stray \right!
+        when (/left/)        { $box = handle_left($str) }
         default      { die "Unknown command [$_].  Can't handle." }
     }
     return $box;
@@ -149,17 +147,126 @@ sub handle_sqrt {
     return boxify($degree, $sep, $arg);
 }
 
-# TODO Parenthetical macros
-sub handle_langle {
+sub handle_left {
     # TODO See http://en.wikipedia.org/wiki/Bracket
     my $str = shift; # Reference
-    D("> handle_langle");
+    D("> handle_left");
+
+    # TODO I *need* get_char().
+    my $leftdelim = find_block( $str );
+    my %pairables = (
+        "\x{27e8}" => "\x{27e8}",
+        "\x{27e9}" => "\x{27e9}",
+        '(' => '(',
+        ')' => ')',
+        '|' => '|',
+        '[' => '[',
+        ']' => ']',
+    );
+
+    if ( exists $pairables{$leftdelim->{content}->[0]} ) {
+        unshift @$str, '\left';
+        my $arg         = expand( stackautomaton( $str, '\left', '\right' ) );
+        my $rightdelim  = find_block( $str );
+        my $height      = $arg->{height};
+        my $left        = make_delim($leftdelim, $height);
+        my $right       = make_delim($rightdelim, $height);
+        $left->{head}   = $arg->{head};
+        $left->{foot}   = $arg->{foot};
+        $right->{head}  = $arg->{head};
+        $right->{foot}  = $arg->{foot};
+        return boxify( $left, $arg, $right );
+    } else {
+        die "unpairable delimiter";
+    }
+    #return $arg;
+}
+
+sub make_delim {
+    D("> make_delim");
+    my $delim  = shift;
+    my $height = shift;
+
+    $delim = substr $delim->{content}->[0], 0, 1;  # TODO This is just ... borked.
+
+    my %delims = (
+        # regular, width-1 delimiters:
+        # TODO Document!
+        #'(' => [ '('        , "\x{256d}" , "\x{2502}" , "\x{2570}" ],
+        #')' => [ ')'        , "\x{256e}" , "\x{2502}" , "\x{256f}" ],
+        '|' => [ "\x{2502}" , "\x{2502}" , "\x{2502}" , "\x{2502}" ],
+        #'[' => [ '['        , "\x{250c}" , "\x{2502}" , "\x{2514}" ],
+        #']' => [ ']'        , "\x{2511}" , "\x{2502}" , "\x{2518}" ],
+        # with code block 'Misc Technical':
+        '(' => [ '('        , "\x{239B}" , "\x{239C}" , "\x{239D}" ],
+        ')' => [ ')'        , "\x{239E}" , "\x{239F}" , "\x{23A0}" ],
+        '[' => [ '['        , "\x{23A1}" , "\x{23A2}" , "\x{23A3}" ],
+        ']' => [ ']'        , "\x{23A4}" , "\x{23A5}" , "\x{23A6}" ],
+        '{' => [ '{'        , "\x{23A7}" , "\x{23A8}" , "\x{23A9}" ],
+        '}' => [ '}'        , "\x{23AB}" , "\x{23AC}" , "\x{23AD}" ],
+        # variable-width, odd and pathologic delimiters:
+        "\x{27e8}" => "handle_langle",
+        "<"        => "handle_langle",
+        "\x{27e9}" => "handle_rangle",
+        ">"        => "handle_rangle",
+    );
+
     my $box;
 
-    # Gather the necessary information.
-    my $arg    = find_ext_block($str, '\langle', '\rangle');
+    if ( scalar( @{$delims{$delim}} ) == 4 ) {
+        $box        = make_unity_box( $delims{$delim}->[0] );
+        my @content = ();
 
-    return $arg;
+        if ( $height != 1 ) {
+            push @content, $delims{$delim}->[1];
+            push @content, $delims{$delim}->[2] foreach (1 .. ($height-2));
+            push @content, $delims{$delim}->[3];
+
+            $box->{content} = \@content;
+            $box->{height}  = $height;
+        }
+    } else { # TODO God help me.
+        $box = &{$delims{$delim}}($height);
+    }
+
+    normalize_box($box);
+    return $box;
+}
+
+sub handle_langle {
+    D('> handle_langle');
+
+    my $height  = shift;
+    my $box     = make_unity_box('<');
+    if ( $height != 1 ) {
+        my @content = ();
+        push @content, ' 'x$_ . "\x{2571}" foreach reverse ( 1 .. ($height/2) );
+        push @content, '<';
+        push @content, ' 'x$_ . "\x{2572}" foreach ( 1 .. ($height/2) );
+        $box->{content} = \@content;
+        $box->{height}  = $height;
+        normalize_box($box);
+    }
+
+    return $box;
+}
+
+sub handle_rangle {
+    D('> handle_rangle');
+
+    my $height  = shift;
+    my $box     = make_unity_box('>');
+    if ( $height != 1 ) {
+        my @content = ();
+        push @content, ' 'x$_ . "\x{2572}" foreach ( 0 .. ($height/2)-1 );
+        push @content, ' 'x($height/2) . '>'; # TODO "\x{232A}" !
+        push @content, ' 'x$_ . "\x{2571}" foreach reverse ( 0 .. ($height/2)-1 );
+        $box->{content} = \@content;
+        $box->{height}  = $height;
+        normalize_box($box);
+    }
+
+    return $box;
 }
 
 # TODO Trigonometric Functions
