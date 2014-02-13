@@ -119,14 +119,14 @@ sub handle_sqrt {
     # Now for the more general case.
     #
     # Combose the degree-box.
-    push @{$degree->{content}}, " " x ($degree->{width}-1) . "\x{2576}";
-    foreach (1 .. ($arg->{height} - 1)) {
-        unshift @{$degree->{content}}, " " x $degree->{width};
-    }
+    push @{$degree->{content}}, "\x{2570}" . "\x{2500}" x ($degree->{width});
+    unshift @{$degree->{content}}, " "x($degree->{width}) foreach (1 .. ($arg->{height} - 1));
+
     $degree->{height}  = $arg->{height} + 1;
     $degree->{width}++;
     $degree->{head}    = $arg->{head} + 1;
     $degree->{foot}    = $arg->{foot};
+    hpad( 'right', $degree );
 
     # Compose the separator-box.
     my $sep = make_empty_box();
@@ -142,6 +142,8 @@ sub handle_sqrt {
     unshift @{$arg->{content}}, "\x{2500}" x $arg->{width};
     $arg->{height}++;
     $arg->{head}++;
+    # TODO Do it with combining chars!
+    #$arg->{content}->[0] = join '', map { "$_" . "\x{0305}" } split '', $arg->{content}[0];
 
     # Put it all together and ship it!
     return boxify($degree, $sep, $arg);
