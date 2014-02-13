@@ -328,12 +328,16 @@ sub handle_int {
     if ($arg->{height} != 1) {
         my @content;
         push @content, "\x{256d}";
-        push @content, "\x{2502}" foreach (1 .. ($arg->{height}-2));
+        push @content, "\x{2502}";
         push @content, "\x{256f}";
+        # TODO with block 'Misc Technical'?  Breaks many tests.
+        #push @content, "\x{2320}";
+        #push @content, "\x{23AE}"; # foreach (1 .. ($arg->{height}-1));
+        #push @content, "\x{2321}";
         $intbox->{content} = \@content;
+        $intbox->{head}    = 1;
+        $intbox->{foot}    = 1;
     }
-    $intbox->{head}    = $arg->{head};
-    $intbox->{foot}    = $arg->{foot};
     normalize_box($intbox);
 
     # TODO Make a vboxify function from these lines.
@@ -389,16 +393,17 @@ sub handle_sum {
         # TODO btw: I got confused by those concepts: write an outline!
         #
         my @content;
-        push @content, "\x{23BD}"x4; # TODO Depends on height as well!
+        push @content, "\x{23BD}"x4;  # TODO Depends on height as well!
         push @content, "\x{2572}";
         push @content, " >";          # TODO Can't use \x{232a} for space-gobbling reasons!
         push @content, "\x{2571}";
         push @content, "\x{23BA}"x4;
 
         $sumbox->{content} = \@content;
+        # TODO Could normalize_box() conceivably do foot/head balancing, too?
+        $sumbox->{foot} = max( 2, $arg->{head}, $arg->{foot} );
+        $sumbox->{head} = $sumbox->{foot};
         normalize_box($sumbox);
-        $sumbox->{foot} = 2;  # TODO normalize_box() could conceivably do this, too.
-        $sumbox->{head} = 2;
     }
 
     # TODO Make a vboxify function from these lines.
