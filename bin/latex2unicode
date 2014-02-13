@@ -561,8 +561,8 @@ sub stackautomaton {
     # sweetly effective!
 
     my $str      = shift;
-    my $open     = quotemeta(shift);
-    my $close    = quotemeta(shift);
+    my $open     = shift;
+    my $close    = shift;
     #my $nestable = shift;  # TODO Handle math mode, too!
 
     D('> stackautomaton      [' . join('', @$str) . ']');
@@ -572,18 +572,39 @@ sub stackautomaton {
     my $depth = 0;
 
     # TODO Complain if unbalanced or open/close not found!
-    while (scalar(@$str)) {
-        my $char = shift @$str;
-        given ($char) {
-            when (/$open/) {
-                # Put only nested opening blocks on the stack.
-                $block .= $char if ($depth++ > 0);
+    if ( length( $open ) > 1 ) {
+        my $string = join '', @$str;
+
+        foreach my $i ( 0 .. length($string) ) {
+            $depth++ if index( $string, $open, $i )  == $i;
+            $depth-- if index( $string, $close, $i ) == $i;
+            if ( $depth <= 0 ) {
+                # TODO First, <0 is not handled.  At all.
+                # Also, the following assumes that $open appears at the
+                # beginnning of the string.  It *should* be - but is it?
+                $block = substr $string, length($open), ( $i - length($close) +1 );
+                @$str  = split( //, substr $string, ( $i + length($close) ) );
+                last;
             }
-            when (/$close/) {
-                $block .= $char if (--$depth > 0);
-                last if ($depth == 0);
+        }
+    } else {
+        # I had no need for quotemeta() in the previous branch as
+        # index() isn't touchy.
+        $open  = quotemeta $open;
+        $close = quotemeta $close;
+        while (scalar(@$str)) {
+            my $char = shift @$str;
+            given ( $char ) {
+                when (/$open/) {
+                    # Put only nested opening blocks on the stack.
+                    $block .= $char if ($depth++ > 0);
+                }
+                when (/$close/) {
+                    $block .= $char if (--$depth > 0);
+                    last if ($depth == 0);
+                }
+                default { $block .= $char }
             }
-            default { $block .= $char }
         }
     }
     D('>     ...    inside:  [' . $block . ']');
