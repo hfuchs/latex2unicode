@@ -76,6 +76,15 @@ my %good   = (
     # Is this Unicode Normalization in action?
     # 2014-01-24, Yes.
     '[\hat{J}_a,\hat{\mathbf{j}}^2]=0' => "[J\x{302}ₐ,j\x{302}²]=0",
+
+    # 2014-02-12, Glorious.  Just glorious.
+'L = \frac12 \int_0^R{dx \left[\rho\left(\frac{\partial q}{\partial t}\right)^2 - \sigma \left(\frac{\partial q}{\partial x}\right)^2 \right]}' =>
+"     R                     \n".
+"   1 ╭  ⎡ ⎛ ∂q ⎞²  ⎛ ∂q ⎞²⎤\n".
+"L=╶─╴│dx⎢ρ⎜╶──╴⎟ -σ⎜╶──╴⎟ ⎥\n".
+"   2 ╯  ⎣ ⎝ ∂t ⎠   ⎝ ∂x ⎠ ⎦\n".
+"     0                     ",
+
 );
 
 while (my ($in, $out) = each %good) {
