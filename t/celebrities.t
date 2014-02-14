@@ -31,12 +31,26 @@ my %good   = (
 
     # Period of a compound pendulum
     'T=2\pi\sqrt{\frac{J}{mgd}}' =>
-    "     ╭─────\n     │  J  \nT=2π2│╶───╴\n    ╶╯ mgd ",
+"      ╭─────\n".
+"      │  J  \n".
+"T=2π 2│╶───╴\n".
+"    ╰─╯ mgd ",
 
     # Gauß' Identity
     'e^{i\pi} = -1' => " iπ   \ne  =-1",
 
-    # TODO 'e^x = \cos{x} + i \sin{x}'
+    # 2014-02-12, Too dense, but okay for now.
+    'e^x = \cos{x} + i \sin{x}' =>
+" x           \n".
+"e =cosx+isinx",
+
+
+    # 2014-02-12, Integral representation of Dirac's delta.
+'\delta_{kk\'} = \frac{1}{V} \int{d^3r e^{-i(k-k\')\cdot r}' =>
+"      1 ╭    -i(k-k')⋅r\n".
+"δ   =╶─╴│d³re          \n".
+" kk'  V ╯              ",
+
 );
 
 # TODO Rampant code duplication in all .t files.
