@@ -11,17 +11,31 @@ my %good   = (
     'x^2_3' =>
     " 2\nx \n 3",
 
+    # 2014-02-12, Not sure what the point is here, but I'll leave it in.
     '\frac12^3' =>
-    "   3\n 1  \n╶─╴ \n 2  ",
+" 1 ³\n".
+"╶─╴ \n".
+" 2  ",
 
-    '\frac{\Omega^\theta\Gamma}{2^o}^3' =>
-    "     3\n  θ   \n Ω Γ  \n╶───╴ \n   o  \n  2   ",
+    # 2014-02-12, Updated for new superscript handler and actual parens!
+    #'\frac{\Omega^\theta\Gamma}{2^o}^3' =>
+'\left(\frac{\Omega^\theta\Gamma}{2^o}\right)^3' =>
+"⎛  θ  ⎞³\n".
+"⎜ Ω Γ ⎟ \n".
+"⎜╶───╴⎟ \n".
+"⎜   o ⎟ \n".
+"⎝  2  ⎠ ",
 
     '\frac{1^f}{34}^a' =>
     "    a\n  f  \n 1   \n╶──╴ \n 34  ",
 
+    # 2014-02-12, Static integral sign.  Much improved.
     'x=\int^2_3{\frac{1^x}{\Omega^2}' =>
-    "  2    \n  ╭  x \n  │ 1  \nx=│╶──╴\n  ╯ Ω² \n  3    ",
+"  2  x \n".
+"  ╭ 1  \n".
+"x=│╶──╴\n".
+"  ╯ Ω² \n".
+"  3    ",
 
     # BrightMare fails at this one
     '\vec{m}=\frac12\int{d^3r \vec{r}\times\vec{j}(\vec{r})}' =>
@@ -29,23 +43,29 @@ my %good   = (
     "m⃗=╶─╴∫d³rr⃗⨯j⃗(r⃗)\n".
     "   2           ",
 
-    '\sqrt[4]{\frac12}' =>
-    " ╭───\n │ 1 \n4│╶─╴\n╶╯ 2 ",
+'\sqrt[4]{\frac12}' =>
+"  ╭───\n".
+"  │ 1 \n".
+" 4│╶─╴\n".
+"╰─╯ 2 ",
 
-    '\sqrt[14]{\frac{12}{32\cdot a_4}}' =>
-    "  ╭───────\n  │   12  \n14│╶─────╴\n ╶╯ 32⋅a₄ ",
+'\sqrt[14]{\frac{12}{32\cdot a_4}}' =>
+"   ╭───────\n".
+"   │   12  \n".
+" 14│╶─────╴\n".
+"╰──╯ 32⋅a₄ ",
 
     # 2010-04-17, Most tests with vectors lie - the combining char eats space!
     # 2014-01-24, Not anymore!  Logical length() saves the test, once again.
+    # 2014-02-12, New, static-size integral sign.
     '\int_{i=1}^\infty{\sqrt[14]{\int_{-\infty}^0{dx^3\frac{12\vec{x}}{32\cdot a_4}}}}' =>
-    " ∞                \n".
-    " ╭   ╭────────────\n".
-    " │   │ 0          \n".
-    " │   │ ╭     12x⃗  \n".
-    " │   │ │dx³╶─────╴\n".
-    " │ 14│ ╯    32⋅a₄ \n".
-    " ╯  ╶╯-∞          \n".
-    "i=1               ",
+"      ╭────────────\n".
+" ∞    │ 0          \n".
+" ╭    │ ╭     12x⃗  \n".
+" │    │ │dx³╶─────╴\n".
+" ╯  14│ ╯    32⋅a₄ \n".
+"i=1╰──╯-∞          ",
+
 
     '\int\frac12\vec{x}' =>
     "╭ 1  \n│╶─╴x⃗\n╯ 2  ",
