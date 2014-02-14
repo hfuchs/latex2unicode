@@ -17,9 +17,14 @@ my %good   = (
 '\alpha, \beta, \gamma, \Gamma, \delta, \Delta, \ldots, \omega, \Omega' =>
 "α,β,γ,Γ,δ,Δ,…,ω,Ω",
 
-#(p \ominus q) \oplus r = q \ominus (p \oplus r)
+# 2014-02-12, Also a tad bit too dense:
+'(p \ominus q) \oplus r = q \ominus (p \oplus r)' =>
+"(p⊖q)⊕r=q⊖(p⊕r)",
 
-#\epsilon \leq 2^{-t}
+# 2014-02-12, Active.
+'\epsilon \leq 2^{-t}' =>
+"   -t\n".
+"ε≤2  ",
 
 '\frac{3}{2^2} + 1 + \frac{3^2}{2} = \frac{25}{4}' =>
 "  3     3²   25 \n".
@@ -51,9 +56,22 @@ my %good   = (
 "  ╯ 1+t²   \n".
 "  0        ",
 
-#\left(\frac{1}{1 + \frac{1}{1 + \frac{1}{1 + \frac{1}{1 + x}}}}\right)^\sqrt{1+x}
+# 2014-02-12, My god.  This is extremely terrific.
+'\left(\frac{1}{1 + \frac{1}{1 + \frac{1}{1 + \frac{1}{1 + x}}}}\right)^\sqrt{1+x}' =>
+"                   √1̅+̅x̅\n".
+"⎛        1        ⎞    \n".
+"⎜╶───────────────╴⎟    \n".
+"⎜         1       ⎟    \n".
+"⎜ 1+╶───────────╴ ⎟    \n".
+"⎜          1      ⎟    \n".
+"⎜    1+╶───────╴  ⎟    \n".
+"⎜           1     ⎟    \n".
+"⎜       1+╶───╴   ⎟    \n".
+"⎝          1+x    ⎠    ",
 
-#\vartheta \in \left[x^2; +\infty\right)
+# 2014-02-12, Bit too dense right now.
+'\vartheta \in \left[x^2; +\infty\right)' =>
+"ϑ∈[x²;+∞)",
 
 #e = \lim_{n \to \infty} \left(1 + \frac1n\right)^n
 
