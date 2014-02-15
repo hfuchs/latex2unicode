@@ -175,11 +175,19 @@ sub handle_left {
         $left->{foot}   = $arg->{foot};
         $right->{head}  = $arg->{head};
         $right->{foot}  = $arg->{foot};
+        # 2014-02-15, The following code implements the symmetric
+        # delimiters that LaTeX uses.  Unfortunately, they're ugly as
+        # hell in the terminal.
+        #my $height      = 2*( max $arg->{foot}, $arg->{head} ) + 1;
+        #my $bla = max $arg->{head}, $arg->{foot};
+        #$left->{head}   = $bla;
+        #$left->{foot}   = $bla;
+        #$right->{head}  = $bla;
+        #$right->{foot}  = $bla;
         return boxify( $left, $arg, $right );
     } else {
         die "unpairable delimiter";
     }
-    #return $arg;
 }
 
 sub make_delim {
