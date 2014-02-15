@@ -215,12 +215,12 @@ sub boxify {
     my @boxes = @_; # List of references.
 
     # Find the maximum box parameters for padding
-    my ($height, $foot, $head) = (1, 0, 0);
+    my ($foot, $head) = (0, 0);
     foreach my $box (@boxes) {
-        $box->{height} > $height ? $height = $box->{height} : 1;
-        $box->{foot} > $foot     ? $foot   = $box->{foot}   : 1;
-        $box->{head} > $head     ? $head   = $box->{head}   : 1;
+        $box->{foot} > $foot   ?   $foot = $box->{foot}   :   undef;
+        $box->{head} > $head   ?   $head = $box->{head}   :   undef;
     }
+    my $height = $foot + $head +1;
 
     foreach my $box (@boxes) {
         vpad($foot, $head, $box);
