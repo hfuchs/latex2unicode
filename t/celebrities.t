@@ -51,6 +51,25 @@ my %good   = (
 "δ   =╶─╴│d³re          \n".
 " kk'  V ╯              ",
 
+# 2014-02-15, Klein-Gordon equation (also regression test for
+# simultaneous sub/superscript handling :).
+'\left( \partial_\mu \partial^\mu + m^2 \right) \psi = 0' =>
+"⎛   μ   ⎞   \n".
+"⎜∂ ∂ +m²⎟ψ=0\n".
+"⎝ μ     ⎠   ",
+# 2014-02-15, And the KG probability density.
+'\rho = \frac{i\hbar}{2m}\left(\psi^*\partial_t\psi - \psi\partial_t\psi^*\right)' =>
+"   iħ ⎛ *        *⎞\n".
+"ρ=╶──╴⎜ψ ∂ ψ-ψ∂ ψ ⎟\n".
+"   2m ⎝   t    t  ⎠",
+# 2014-02-15, Regression test for foot-head mixup in
+# process_superscript: invariance of the time evolution operator.
+'\left| u_\nu (\vec{r},t) \right|^2 = \left|e^{-iE_\nu t} \right|^2 \cdot \left| u_\nu (\vec{r},t) \right|^2= \left| u_\nu (\vec{r},0) \right|^2' =>
+"           │ -iE t│²                      \n".
+"           │    ν │                       \n".
+"│u (r⃗,t)│²=│e     │ ⋅│u (r⃗,t)│²=│u (r⃗,0)│²\n".
+"│ ν     │            │ ν     │  │ ν     │ ",
+
 );
 
 # TODO Rampant code duplication in all .t files.

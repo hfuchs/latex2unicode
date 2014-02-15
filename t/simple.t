@@ -19,8 +19,12 @@ my %good   = (
     '\aleph\equiv'    => 'ℵ≡',
     '1\ast 2 \Box \notin\langle f \mid \cdot\times\mapsto\ast\times\Im\Re\rangle\perp' =>
     '1∗2□∉⟨f∣⋅⨯↦∗⨯ℑℜ⟩⟂',
-
-
+    # 2014-02-15, Remember, *sigh*, that's I'm testing: if I can't
+    # *see* the characters, it simply means my font sucks.
+'\partial_t' =>
+"∂ \n".
+" t",
+'\partial_i' => "∂ᵢ",
 );
 
 while (my ($in, $out) = each %good) {
