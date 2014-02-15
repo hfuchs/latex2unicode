@@ -472,7 +472,7 @@ sub process_fooscript {
     # to use superscript-2).
     if ( my $super = is_superscriptable($upper) and is_empty_box($lower) ) {
         $box = make_unity_box( $super );
-        vpad( $min_head, $min_foot, $box, 'top' );
+        vpad( $min_foot, $min_head, $box, 'top' );
     } elsif ( my $sub = is_subscriptable($lower) and is_empty_box($upper))
     {
         $box = make_unity_box( $sub );
