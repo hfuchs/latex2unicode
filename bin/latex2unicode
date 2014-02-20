@@ -11,6 +11,9 @@ use Encode;
 use POSIX qw(floor);
 use List::Util qw/max/;
 
+# This one's rather obscure, sadly enough.  TODO Replace by \X magic?
+use Unicode::GCString;
+
 # My Modules
 use lib qw/lib/;
 use L2U::Common;
@@ -77,8 +80,9 @@ sub split_box {
     $tailbox->{content}  = undef;
 
     foreach my $line (@{$box->{content}}){
-        push @{$shortbox->{content}}, substr $line, 0, $split;
-        push @{$tailbox->{content}},  substr $line, $split+1;
+        my $gcs = Unicode::GCString->new($line);
+        push @{$shortbox->{content}}, $gcs->substr( 0, $split );
+        push @{$tailbox->{content}},  $gcs->substr( $split+1 );
     }
     $shortbox->{width} = $split + 1;
     $tailbox->{width}  = $box->{width} - $split - 2;
@@ -106,13 +110,19 @@ sub find_splits {
     # doesn't have spaces. . . See?  So, in the end only those positions
     # that have spaces in all content lines will remain as keys in the
     # %spaces hash.  Probably not as convoluted as it seems to me.
+    #
+    # ... actually, yes.  If Perl's default length() buying in the whole
+    # combining characters are stand-alone characters then so is
+    # substr(), obviously.  Unicode::GCString is a nice little module
+    # that introduces grapheme-aware versions of those.
 
     my %spaces;
 
     foreach my $line (@{$box->{content}}) {
+        my $gcs = Unicode::GCString->new($line);
         my $offset = 0;
         while ( $offset < length $line ) {
-            $spaces{$offset}++ if substr( $line, $offset, 1 ) eq " ";
+            $spaces{$offset}++ if $gcs->substr( $offset, 1 ) eq " ";
             $offset++;
         }
     }
