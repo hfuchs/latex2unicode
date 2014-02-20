@@ -19,6 +19,15 @@ my %good   = (
 "                                        ╭ x  \n".
 "in der relativ. Relation E²=p²+m². Also │╶─╴.\n".
 "                                        ╯ 2  ",
+
+# 2014-02-20, Bit contrived, but here goes:  I need to fortify against
+# a non-grapheme-aware implementation of substr().
+'The probability density,$\vec{j}$, in non-relativistic (Schrödinger) quantum mechanics is $\left( \vec{j} = \frac{i\hbar}{2m} \left[\psi \nabla \psi^{*} - \psi^{*} \nabla \psi \right] \right)$.' =>
+"The probability density,j⃗, in non-relativistic (Schrödinger) quantum\n".
+"             ⎛   iħ ⎡   *  *  ⎤⎞ \n".
+"mechanics is ⎜j⃗=╶──╴⎣ψ∇ψ -ψ ∇ψ⎦⎟.\n".
+"             ⎝   2m            ⎠ ",
+
 );
 
 while (my ($in, $out) = each %good) {
