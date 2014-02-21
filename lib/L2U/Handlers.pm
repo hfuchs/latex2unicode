@@ -17,7 +17,8 @@ sub handle {
 
     given($cmd) {
         # TODO This should be a hash table.
-        when (/^bar$/)   { $box = handle_bar($str) }
+        when (/^overline$/)   { $box = handle_bar($str) }
+        when (/^bar$/)        { $box = handle_bar($str) }
         when (/^vec$/)   { $box = handle_vec($str) }
         when (/^hat$/)   { $box = handle_hat($str) }
         when (/^dot$/)   { $box = handle_dot($str) }
@@ -295,7 +296,8 @@ sub handle_bar {
 
     # TODO Check for single character!
     my $char = find_block($str);
-    $char->{content}->[0] = $char->{content}->[0] . "\x{0305}";
+    $char->{content}->[0] =
+    join '', map { "$_" . "\x{0305}" } split '', $char->{content}->[0];
     return $char;
 }
 
