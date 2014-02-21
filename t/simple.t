@@ -25,6 +25,7 @@ my %good   = (
 "∂ \n".
 " t",
 '\partial_i' => "∂ᵢ",
+'\overline{abc}' => "a̅b̅c̅",
 );
 
 while (my ($in, $out) = each %good) {
