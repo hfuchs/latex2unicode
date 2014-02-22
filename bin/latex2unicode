@@ -604,7 +604,8 @@ sub stackautomaton {
                 # TODO First, <0 is not handled.  At all.
                 # Also, the following assumes that $open appears at the
                 # beginnning of the string.  It *should* be - but is it?
-                $block = substr $string, length($open), ( $i - length($close) +1 );
+                # TODO gcs->substr?
+                $block = substr $string, length($open), ( $i - length($open) );
                 @$str  = split( //, substr $string, ( $i + length($close) ) );
                 last;
             }
