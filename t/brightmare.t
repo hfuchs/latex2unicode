@@ -59,7 +59,8 @@ my %good   = (
 # 2014-02-12, My god.  This is extremely terrific.
 '\left(\frac{1}{1 + \frac{1}{1 + \frac{1}{1 + \frac{1}{1 + x}}}}\right)^\sqrt{1+x}' =>
 "                   √1̅+̅x̅\n".
-"⎛        1        ⎞    \n".
+"⎛                 ⎞    \n".
+"⎜        1        ⎟    \n".
 "⎜╶───────────────╴⎟    \n".
 "⎜         1       ⎟    \n".
 "⎜ 1+╶───────────╴ ⎟    \n".

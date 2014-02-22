@@ -22,6 +22,17 @@ my %good   = (
 "╶──╴\n".
 " x² ",
 
+# 2014-02-21, Interesting.  Again, my intuition matches latex' practice.
+'a=\left\langle\frac{1}{\frac{1}{\frac{1}{2\pi}}}\right|' =>
+"    ╱        │\n".
+"   ╱     1   │\n".
+"a=⟨  ╶──────╴│\n".
+"   ╲     1   │\n".
+"    ╲ ╶────╴ │\n".
+"         1   │\n".
+"       ╶──╴  │\n".
+"        2π   │",
+
 );
 
 while (my ($in, $out) = each %good) {

@@ -25,8 +25,8 @@ my %good   = (
 'The probability density,$\vec{j}$, in non-relativistic (Schrödinger) quantum mechanics is $\left( \vec{j} = \frac{i\hbar}{2m} \left[\psi \nabla \psi^{*} - \psi^{*} \nabla \psi \right] \right)$.' =>
 "The probability density,j⃗, in non-relativistic (Schrödinger) quantum\n".
 "             ⎛   iħ ⎡   *  *  ⎤⎞ \n".
-"mechanics is ⎜j⃗=╶──╴⎣ψ∇ψ -ψ ∇ψ⎦⎟.\n".
-"             ⎝   2m            ⎠ ",
+"mechanics is ⎜j⃗=╶──╴⎢ψ∇ψ -ψ ∇ψ⎥⎟.\n".
+"             ⎝   2m ⎣         ⎦⎠ ",
 
 );
 

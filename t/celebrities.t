@@ -66,9 +66,9 @@ my %good   = (
 # process_superscript: invariance of the time evolution operator.
 '\left| u_\nu (\vec{r},t) \right|^2 = \left|e^{-iE_\nu t} \right|^2 \cdot \left| u_\nu (\vec{r},t) \right|^2= \left| u_\nu (\vec{r},0) \right|^2' =>
 "           │ -iE t│²                      \n".
-"           │    ν │                       \n".
-"│u (r⃗,t)│²=│e     │ ⋅│u (r⃗,t)│²=│u (r⃗,0)│²\n".
-"│ ν     │            │ ν     │  │ ν     │ ",
+"│       │² │    ν │  │       │² │       │²\n".
+"│u (r⃗,t)│ =│e     │ ⋅│u (r⃗,t)│ =│u (r⃗,0)│ \n".
+"│ ν     │  │      │  │ ν     │  │ ν     │ ",
 
 );
 
