@@ -180,6 +180,18 @@ sub expand {
 }
 
 # Box Creation, Padding & Tester
+#
+# The cornerstones here are boxify() and hpad().  They work closely
+# together and make sure that boxes "fit" together.  Note that vpad() is
+# badly misnamed as it is in no way symmetrical to to hpad().
+#
+# Basic functions like make_unity_box(), make_empty_box(),
+# clone_box(), as well as their friends is_primitive(), is_empty_box()
+# and is_unit_box() do exactly what they say.
+#
+# Beautifying or optimizing functions like slim_box() and
+# normalize_box() might possibly be merged or renamed at some point in
+# time.
 sub make_unity_box {
     my $arg = shift; # TODO Test is_one_char().
     my $box = make_empty_box();
