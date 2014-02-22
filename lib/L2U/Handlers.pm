@@ -149,6 +149,11 @@ sub handle_sqrt {
 }
 
 sub handle_left {
+    # Together with make_delim(), this function is responsible for
+    # creating scaled versions of *brackets.  Note that I (and LaTeX, as
+    # it turns out!) distinguish between symmetric delimiters such as
+    # angle brackets and asymmetric delimiters such as parentheses.
+    #
     # TODO See http://en.wikipedia.org/wiki/Bracket
     my $str = shift; # Reference
     D("> handle_left");
@@ -169,22 +174,8 @@ sub handle_left {
         unshift @$str, '\left';
         my $arg         = expand( stackautomaton( $str, '\left', '\right' ) );
         my $rightdelim  = find_block( $str );
-        my $height      = $arg->{height};
-        my $left        = make_delim($leftdelim, $height);
-        my $right       = make_delim($rightdelim, $height);
-        $left->{head}   = $arg->{head};
-        $left->{foot}   = $arg->{foot};
-        $right->{head}  = $arg->{head};
-        $right->{foot}  = $arg->{foot};
-        # 2014-02-15, The following code implements the symmetric
-        # delimiters that LaTeX uses.  Unfortunately, they're ugly as
-        # hell in the terminal.
-        #my $height      = 2*( max $arg->{foot}, $arg->{head} ) + 1;
-        #my $bla = max $arg->{head}, $arg->{foot};
-        #$left->{head}   = $bla;
-        #$left->{foot}   = $bla;
-        #$right->{head}  = $bla;
-        #$right->{foot}  = $bla;
+        my $left        = make_delim($leftdelim, $arg);
+        my $right       = make_delim($rightdelim, $arg);
         return boxify( $left, $arg, $right );
     } else {
         die "unpairable delimiter";
@@ -194,7 +185,8 @@ sub handle_left {
 sub make_delim {
     D("> make_delim");
     my $delim  = shift;
-    my $height = shift;
+    my $arg    = shift;
+    my $height = $arg->{height};
 
     $delim = substr $delim->{content}->[0], 0, 1;  # TODO This is just ... borked.
 
@@ -227,33 +219,77 @@ sub make_delim {
         my @content = ();
 
         if ( $height != 1 ) {
+            # TODO Explain reasoning behind asymmetric boxes.
+            $height++ if $arg->{foot} != $arg->{head};
+
             push @content, $delims{$delim}->[1];
             push @content, $delims{$delim}->[2] foreach (1 .. ($height-2));
             push @content, $delims{$delim}->[3];
 
             $box->{content} = \@content;
             $box->{height}  = $height;
+            $box->{foot}  = $arg->{foot};
+            $box->{head}  = $arg->{head};
+
+            # Dealing with asymmetric content again.
+            $box->{foot}++ if $arg->{foot} < $arg->{head};
+            $box->{head}++ if $arg->{foot} > $arg->{head};
         }
     } else { # TODO God help me.
-        $box = &{$delims{$delim}}($height);
+        $box = &{$delims{$delim}}( $arg );
     }
 
     normalize_box($box);
     return $box;
 }
 
+# The angle brackets are currently the only "strictly symmetric"
+# delimiters in that they cannot be scaled well to accommodate
+# arbitrarly skewed contents.
 sub handle_langle {
     D('> handle_langle');
+    my $arg     = shift;
+    return handle_fooangle( "langle", $arg );
+}
 
-    my $height  = shift;
-    my $box     = make_unity_box('<');
+sub handle_rangle {
+    D('> handle_rangle');
+    my $arg     = shift;
+    return handle_fooangle( "rangle", $arg );
+}
+
+sub handle_fooangle {
+    D('> handle_fooangle');
+
+    my $type    = shift;
+    my $arg     = shift;
+    my $height  = $arg->{height};
+    my $box     = make_unity_box( $type eq "langle" ? "\x{27E8}" : "\x{27E9}" );
+
     if ( $height != 1 ) {
+
+        $height = 2 * min $arg->{foot}, $arg->{head};
+        $height += 2 if $arg->{foot} != $arg->{head};
+
         my @content = ();
-        push @content, ' 'x$_ . "\x{2571}" foreach reverse ( 1 .. ($height/2) );
-        push @content, '<';
-        push @content, ' 'x$_ . "\x{2572}" foreach ( 1 .. ($height/2) );
+
+        if ( $type eq "rangle" ) {
+            push @content, ' 'x$_ . "\x{2572} " foreach ( 0 .. ($height/2)-1 );
+            push @content, ' 'x($height/2) . "\x{27E9}";
+            push @content, ' 'x$_ . "\x{2571} " foreach reverse ( 0 .. ($height/2)-1 );
+        } elsif ( $type eq "langle" ) {
+            push @content, ' 'x$_ . "\x{2571}" foreach reverse ( 1 .. ($height/2) );
+            push @content, "\x{27E8}";
+            push @content, ' 'x$_ . "\x{2572}" foreach ( 1 .. ($height/2) );
+        } else {
+            die "unsupported angle type: $type";
+        }
+
         $box->{content} = \@content;
         $box->{height}  = $height;
+        $box->{foot}    = $height/2;
+        $box->{head}    = $height/2;
+
         normalize_box($box);
     }
 
