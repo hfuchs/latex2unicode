@@ -84,15 +84,27 @@ my %good   = (
 
 #(u + v)^n = \sum_{i=0}^n \binom{n}{i} u^{n-i}v^i
 
-#\left|\begin{array}{ccccc}a&b&\frac1c&d&e\\&p^2&q&r_2\\&&z\end{array}\right|
+'\left|\begin{array}{ccccc}a&b&\frac1c&d&e\\\\&p^2&q&r_2\\\\&&z\end{array}\right|' =>
+"│         1         │\n".
+"│ a   b  ╶─╴  d   e │\n".
+"│         c         │\n".
+"│                   │\n".
+"│     p²  q   r₂    │\n".
+"│                   │\n".
+"│         z         │",
 
-#\left(\begin{array}{lcr}a&b&c\\aaa&bbb&ccc\\aaaaa&bbbbb&ccccc\end{array}\right)
+#'\left(\begin{array}{lcr}a&b&c\\aaa&bbb&ccc\\aaaaa&bbbbb&ccccc\end{array}\right)' =>
+#"⎛a       b       c⎞\n".
+#"⎜                 ⎟\n".
+#"⎜aaa    bbb    ccc⎟\n".
+#"⎜                 ⎟\n".
+#"⎝aaaaa bbbbb ccccc⎠",
 
 #\left[\begin{array}{rr}1&2\\3&-4\end{array}\right]^5=\left[\begin{array}{rr}1&2^5\\3^5&-2^{10}\end{array}\right]
 );
 
 while (my ($in, $out) = each %good) {
-    my $got = decode_utf8 `$l2u "$in"`;
+    my $got = decode_utf8 `$l2u '$in'`;
     chomp $got;
     # 2014-01-24, These dumps are rather educating.  I'll leave 'em for
     # the time being.
