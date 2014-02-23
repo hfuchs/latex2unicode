@@ -5,7 +5,7 @@ use feature qw/switch say/;
 no warnings;
 
 use L2U::Common;
-use List::Util qw/max min/;
+use List::Util qw/max min reduce/;
 
 sub handle {
     my $cmd = shift; # string
@@ -30,8 +30,9 @@ sub handle {
         # <http://en.wikipedia.org/wiki/Blackboard_bold>.
         when (/^(mathrm|rm)$/)   { $box = handle_dummy($str) }
         when (/^mathbf$/)      { $box = handle_dummy($str) }
-        # TODO I should balk when encountering a stray \right!
+        # TODO I should balk when encountering a stray \right or \end!
         when (/left/)        { $box = handle_left($str) }
+        when (/begin/)       { $box = handle_begin($str) }
         default      { die "Unknown command [$_].  Can't handle." }
     }
     return $box;
@@ -296,22 +297,89 @@ sub handle_fooangle {
     return $box;
 }
 
-sub handle_rangle {
-    D('> handle_rangle');
+# Generic environment handler, very similar to handle_left().
+sub handle_begin {
+    my $str = shift; # Reference
+    D("> handle_begin");
 
-    my $height  = shift;
-    my $box     = make_unity_box('>');
-    if ( $height != 1 ) {
-        my @content = ();
-        push @content, ' 'x$_ . "\x{2572}" foreach ( 0 .. ($height/2)-1 );
-        push @content, ' 'x($height/2) . '>'; # TODO "\x{232A}" !
-        push @content, ' 'x$_ . "\x{2571}" foreach reverse ( 0 .. ($height/2)-1 );
-        $box->{content} = \@content;
-        $box->{height}  = $height;
-        normalize_box($box);
+    # TODO Options!
+    # TODO Bit ugly, don't you think?  How about get_content()?
+    my $command = join '', @{find_block( $str )->{content}};
+    my $handler = "handle_" . $command;
+
+    die "Unknown environment [$command]." unless ( defined(&{$handler}) );
+
+    unshift @$str, '\begin{' . $command . '}';
+    #my $arg         = expand( stackautomaton( $str, '\begin{'.$command.'}', '\end{'.$command.'}' ) );
+    my $arg         = stackautomaton( $str, '\begin{'.$command.'}', '\end{'.$command.'}' );
+
+    &{$handler}( [ split //, $arg ] );
+    #my $rightdelim  = find_block( $str );
+    #my $left        = make_delim($leftdelim, $arg);
+    #my $right       = make_delim($rightdelim, $arg);
+    #return boxify( $left, $arg, $right );
+
+}
+
+sub handle_array {
+    my $str = shift;      # Reference
+    D("> handle_array");
+
+    my $opts  = find_block( $str );
+    # TODO check_table_sanity()!
+    my $table = find_table_elements( $str );
+
+    my @boxes;
+    push @boxes, @$_ foreach @$table;
+
+
+    hpad( @boxes );
+
+    my @rows;
+    foreach my $row (@$table) {
+        # I *told* you: 'bit of 'askell never hurt nobody!
+        # (The same thing done with map() would lead to another unity
+        # box at the end.  Can't have that, now can we? :)
+        push @rows, reduce { boxify( $a, make_unity_box(), $b ) } @$row;
     }
+    # TODO Here we go again.  Implementing vboxify().  hpad() could be
+    # doing precisely that - if it wasn't returning $width...
+    my @content = ();
+    foreach my $row (@rows) {
+        push @content, @{$row->{content}};
+        push @content, " "x$row->{width};
+    }
+    pop @content;
+
+    my $box = make_empty_box();
+    $box->{content} = \@content;
+    normalize_box( $box );
+    $box->{head} = $box->{foot} = int( $box->{height} / 2 );
 
     return $box;
+}
+
+sub find_table_elements {
+    #
+    # Basically:  '0&1\\1&0' -> [ [box(0), box(1)], [box(1), box(0)] ]
+    #
+
+    D("> find_table_elements");
+    my $str    = shift;      # Reference
+    my $string = join '', @$str;
+    my @rows   = split /\\\\/, $string;
+
+    my @table;
+    foreach my $row (@rows) {
+        my @entries;
+        # TODO Negative look-behind for '\'?
+        foreach my $entry ( split /&/, $row ) {
+            push @entries, expand( $entry );
+        }
+        push @table, [ @entries ];
+    }
+
+    return \@table;
 }
 
 # TODO Trigonometric Functions
