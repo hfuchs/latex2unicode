@@ -70,6 +70,16 @@ my %good   = (
 "│u (r⃗,t)│ =│e     │ ⋅│u (r⃗,t)│ =│u (r⃗,0)│ \n".
 "│ ν     │  │      │  │ ν     │  │ ν     │ ",
 
+# 2014-02-22, A many-particle state vector in Slater determinant
+# representation.
+'\Psi (x_1,\ldots ,x_N) = \sum_L{ c_L \frac{1}{\sqrt{N}} \mathrm{det}\left|\left\langle x_j|\phi_{l_k}\right\rangle \right|_{(j,k)}}' =>
+"           ⎽⎽⎽⎽         │          │     \n".
+"           ╲       1    │ ╱      ╲ │     \n".
+"Ψ(x₁,…,x )= ⟩  c ╶──╴det│⟨ x |ϕ   ⟩│     \n".
+"        N  ╱    L √N̅    │ ╲ j  l ╱ │     \n".
+"           ⎺⎺⎺⎺         │       k  │     \n".
+"             L                      (j,k)",
+
 );
 
 # TODO Rampant code duplication in all .t files.
