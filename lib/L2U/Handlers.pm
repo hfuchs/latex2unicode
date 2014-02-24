@@ -509,14 +509,11 @@ sub handle_sum {
         my @content;
         push @content, "\x{23BD}"x4;  # TODO Depends on height as well!
         push @content, "\x{2572}";
-        push @content, " >";          # TODO Can't use \x{232a} for space-gobbling reasons!
+        push @content, " \x{27E9}";
         push @content, "\x{2571}";
         push @content, "\x{23BA}"x4;
 
         $sumbox->{content} = \@content;
-        # TODO Could normalize_box() conceivably do foot/head balancing, too?
-        $sumbox->{foot} = max( 2, $arg->{head}, $arg->{foot} );
-        $sumbox->{head} = $sumbox->{foot};
         normalize_box($sumbox);
     }
 
@@ -524,15 +521,16 @@ sub handle_sum {
     if ($upper) {
         hpad($upper, $sumbox);
         unshift @{$sumbox->{content}}, @{$upper->{content}};
-        $sumbox->{height} += $upper->{height};
-        $sumbox->{head}   += $upper->{height};
+        push @{$sumbox->{content}}, ' ' if not $lower;
     }
     if ($lower) {
         hpad($lower, $sumbox);
         push @{$sumbox->{content}}, @{$lower->{content}};
-        $sumbox->{height} += $lower->{height};
-        $sumbox->{foot}   += $lower->{height};
+        unshift @{$sumbox->{content}}, ' ' if not $upper;
     }
+    # TODO Could normalize_box() conceivably do foot/head balancing, too?
+    normalize_box($sumbox);
+    $sumbox->{foot} = $sumbox->{head} = int( $sumbox->{height}/2 );
 
     return boxify($sumbox, $arg);
 }
