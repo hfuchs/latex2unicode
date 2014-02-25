@@ -17,15 +17,16 @@ my %good   = (
     '1\times2'        => "1⨯2",
     '\propto\infty'   => "∝∞",
     '\aleph\equiv'    => 'ℵ≡',
+    '\partial_i'      => "∂ᵢ",
+    '\overline{abc}'  => "a̅b̅c̅",
+    '\hat nm'         => "n̂m",
     '1\ast 2 \Box \notin\langle f \mid \cdot\times\mapsto\ast\times\Im\Re\rangle\perp' =>
     '1∗2□∉⟨f∣⋅⨯↦∗⨯ℑℜ⟩⟂',
-    # 2014-02-15, Remember, *sigh*, that's I'm testing: if I can't
+    # 2014-02-15, Remember, *sigh*, that's why I'm testing: if I can't
     # *see* the characters, it simply means my font sucks.
-'\partial_t' =>
+    '\partial_t' =>
 "∂ \n".
 " t",
-'\partial_i' => "∂ᵢ",
-'\overline{abc}' => "a̅b̅c̅",
 );
 
 while (my ($in, $out) = each %good) {
