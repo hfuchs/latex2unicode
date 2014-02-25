@@ -28,8 +28,10 @@ sub handle {
         when (/^sum$/)         { $box = handle_sum($str) }
         # TODO Handle fonts, eg. \mathbb, differently!  See
         # <http://en.wikipedia.org/wiki/Blackboard_bold>.
-        when (/^(mathrm|rm)$/)   { $box = handle_dummy($str) }
-        when (/^mathbf$/)      { $box = handle_dummy($str) }
+        when (/^(mathrm|rm)$/)  { $box = handle_dummy($str) }
+        when (/^mathbf$/)       { $box = handle_dummy($str) }
+        when (/^mathbb$/)       { $box = handle_dummy($str) }
+        when (/^mathcal$/)      { $box = handle_dummy($str) }
         # TODO I should balk when encountering a stray \right or \end!
         when (/left/)        { $box = handle_left($str) }
         when (/begin/)       { $box = handle_begin($str) }
