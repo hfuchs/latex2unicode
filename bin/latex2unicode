@@ -653,7 +653,8 @@ sub normalize_math {
     my $in = shift;
     D("> normalize_math      [" . $in . "]");
 
-    $in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g;
+    $in =~ s/\s{1,}([a-z])/\{$1\}/g;     # '\hat nm'  ->  '\hat{n}m'
+    #$in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g; # TODO Superfluous now?
     $in =~ s|\\([;:!,])|\\$1\{\}|g;      # TODO Top-off-my-head character list.
     $in =~ s/\s{1,}//g;
 
