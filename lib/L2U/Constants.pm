@@ -67,7 +67,7 @@ my %chars = (
     # https://en.wikipedia.org/wiki/Mathematical_Operators
     # http://www.artofproblemsolving.com/Wiki/index.php/LaTeX:Symbols#Operators
     # http://fakten-uber.de/liste_mathematischer_symbole
-    'forall'   => "\x{2201}",
+    'forall'   => "\x{2200}",
     'partial'  => "\x{2202}",
     'exists'   => "\x{2203}",
     'emptyset' => "\x{2205}",
