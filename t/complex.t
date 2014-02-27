@@ -85,6 +85,15 @@ my %good   = (
 "   2 ╯  ⎣ ⎝ ∂t ⎠   ⎝ ∂x ⎠ ⎦\n".
 "     0                     ",
 
+# 2014-03-02, Field operator.  \sum's now independent of it's "argument".
+'\Psi = \frac{1}{\sqrt{V}}\sum_k e^{i\vec{k}\cdot\vec{r}} a_{\vec{k}}' =>
+"      ⎽⎽⎽⎽       \n".
+"    1 ╲    ik⃗⋅r⃗  \n".
+"Ψ=╶──╴ ⟩  e    a \n".
+"   √V̅ ╱         k⃗\n".
+"      ⎺⎺⎺⎺       \n".
+"        k        ",
+
 );
 
 while (my ($in, $out) = each %good) {
