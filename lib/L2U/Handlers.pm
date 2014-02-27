@@ -478,14 +478,19 @@ sub handle_sum {
     D('> handle_sum');
     my $str             = shift;
     my ($upper, $lower) = find_limits($str);
-    my $arg             = find_block($str);
 
     # Feeling clever, I create an initial box that already contains the
     # proper sign for the "height == 1" case and only afterwards
     # construct a larger sign if necessary.
     my $sumbox = make_unity_box( "\x{03A3}" );
 
-    if ($arg->{height} != 1) {
+    # TODO 2014-03-02, Instead of using arguments (which \sum doesn't
+    # take) I should go for external hints, like "line-mode" which
+    # switches to the one-char version.  For now, I'll simply use the
+    # large sign.
+    #
+    #if ($arg->{height} != 1) {
+    if (1) {
         # 2014-01-26, How Do I draw a life-sized sigma?
         # 2014-01-27, With characters from Misc Technical (2300—23FF).
         # 1  -> Σ
@@ -509,7 +514,7 @@ sub handle_sum {
         # TODO btw: I got confused by those concepts: write an outline!
         #
         my @content;
-        push @content, "\x{23BD}"x4;  # TODO Depends on height as well!
+        push @content, "\x{23BD}"x4;
         push @content, "\x{2572}";
         push @content, " \x{27E9}";
         push @content, "\x{2571}";
@@ -534,7 +539,7 @@ sub handle_sum {
     normalize_box($sumbox);
     $sumbox->{foot} = $sumbox->{head} = int( $sumbox->{height}/2 );
 
-    return boxify($sumbox, $arg);
+    return $sumbox;
 }
 
 
