@@ -437,11 +437,12 @@ sub handle_int {
     D('> handle_int');
     my $str             = shift;
     my ($upper, $lower) = find_limits($str);
-    my $arg             = find_block($str);
 
     my $intbox = make_unity_box( "\x{222B}" );
 
-    if ($arg->{height} != 1) {
+    # 2014-03-02, See argument in handle_sum().
+    #if ($arg->{height} != 1) {
+    if (1) {
         my @content;
         push @content, "\x{256d}";
         push @content, "\x{2502}";
@@ -470,7 +471,7 @@ sub handle_int {
         $intbox->{foot}   += $lower->{height};
     }
 
-    return boxify($intbox, $arg);
+    return $intbox;
 }
 
 sub handle_sum {
