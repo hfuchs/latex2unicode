@@ -8,7 +8,12 @@ use Encode;
 my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
-    '\int^3_{4a_234}' => "  3  \n  ∫  \n4a₂34",
+    '\int^3_{4a_234}' =>
+"  3  \n".
+"  ╭  \n".
+"  │  \n".
+"  ╯  \n".
+"4a₂34",
 );
 
 while (my ($in, $out) = each %good) {

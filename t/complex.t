@@ -39,9 +39,10 @@ my %good   = (
 
     # BrightMare fails at this one
     '\vec{m}=\frac12\int{d^3r \vec{r}\times\vec{j}(\vec{r})}' =>
-    "   1           \n".
-    "m⃗=╶─╴∫d³rr⃗⨯j⃗(r⃗)\n".
-    "   2           ",
+"   1 ╭         \n".
+"m⃗=╶─╴│d³rr⃗⨯j⃗(r⃗)\n".
+"   2 ╯         ",
+
 
 '\sqrt[4]{\frac12}' =>
 "  ╭───\n".

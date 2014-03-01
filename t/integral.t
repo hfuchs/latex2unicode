@@ -8,8 +8,17 @@ use Encode;
 my $l2u    = './bin/latex2unicode --math';
 
 my %good   = (
-    '\int1'    => "∫1",
-    '\int x'   => "∫x",
+    '\int1'    =>
+"╭ \n".
+"│1\n".
+"╯ ",
+
+    '\int x'   =>
+"╭ \n".
+"│x\n".
+"╯ ",
+
+
     '\int{\frac{1}{\Omega^2}' => "╭  1 \n│╶──╴\n╯ Ω² ",
 
     '\sum_{n=0}^\infty{\frac{3\sqrt{n}}{2}}' =>
