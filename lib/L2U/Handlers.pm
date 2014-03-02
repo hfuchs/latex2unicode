@@ -24,6 +24,7 @@ sub handle {
         when (/^dot$/)   { $box = handle_dot($str) }
         when (/^sqrt$/)  { $box = handle_sqrt($str) }
         when (/^frac$/)  { $box = handle_frac($str) }
+        when (/^lim$/)         { $box = handle_lim($str) }
         when (/^int$/)         { $box = handle_int($str) }
         when (/^sum$/)         { $box = handle_sum($str) }
         # TODO Handle fonts, eg. \mathbb, differently!  See
@@ -431,6 +432,36 @@ sub handle_frac {
     hpad($box);
 
     return $box;
+}
+
+sub handle_lim {
+    D('> handle_lim');
+    my $str             = shift;
+    my ($upper, $lower) = find_limits($str);
+
+    # TODO $upper?  What am I going to do with that?
+
+    # Using "intbox" here to be able to use the block below.
+    my $intbox = make_empty_box();
+    $intbox->{content} = [ "lim" ];
+
+    # TODO Make a vboxify function from these lines.
+    # Even more know that I took this *verbatim* from handle_int.
+    # I changed jack-shit here.
+    if ($upper) {
+        hpad($upper, $intbox);
+        unshift @{$intbox->{content}}, @{$upper->{content}};
+        $intbox->{height} += $upper->{height};
+        $intbox->{head}   += $upper->{height};
+    }
+    if ($lower) {
+        hpad($lower, $intbox);
+        push @{$intbox->{content}}, @{$lower->{content}};
+        $intbox->{height} += $lower->{height};
+        $intbox->{foot}   += $lower->{height};
+    }
+
+    return $intbox;
 }
 
 sub handle_int {
