@@ -74,7 +74,11 @@ my %good   = (
 '\vartheta \in \left[x^2; +\infty\right)' =>
 "ϑ∈[x²;+∞)",
 
-#e = \lim_{n \to \infty} \left(1 + \frac1n\right)^n
+# 2014-03-02, Now that was easy.
+'e = \lim_{n \to \infty} \left(1 + \frac1n\right)^n' =>
+"     ⎛   1 ⎞ⁿ\n".
+"e=lim⎜1+╶─╴⎟ \n".
+"  n→∞⎝   n ⎠ ",
 
 #T(n) = 2T\left(\left\lfloor\frac{n}{2}\right\rfloor\right) + O\left(\sqrt{n}\right)
 
