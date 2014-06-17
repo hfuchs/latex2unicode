@@ -138,6 +138,7 @@ my %chars = (
     ':'        => " ",         # medium space
     ','        => " ",         # thin space
     '!'        => "",          # negative thin space - simply ignored
+    #'{'        => "{",
 );
 
 my %superscripts = (
@@ -181,23 +182,29 @@ my %subscripts = (
     'o' => "\x{2092}",  # Doesn't work for me!
     'x' => "\x{2093}",
     # TODO Unifont doesn't have these.
-    #'h' => "\x{2095}",
-    #'k' => "\x{2096}",
-    #'l' => "\x{2097}",
-    #'m' => "\x{2098}",
-    #'n' => "\x{2099}",
-    #'p' => "\x{209A}",
-    #'s' => "\x{209B}",
-    #'t' => "\x{209C}",
+    'h' => "\x{2095}",
+    'k' => "\x{2096}",
+    'l' => "\x{2097}",
+    'm' => "\x{2098}",
+    'n' => "\x{2099}",
+    'p' => "\x{209A}",
+    's' => "\x{209B}",
+    't' => "\x{209C}",
     # Bit of cheating here: Those are from the "Phonetic Extensions"
     # block.
     'i' => "\x{1D62}",
-    # TODO j, ffs! j! -- Jesus, next time get a few more of those pesky
-    # physicists on those Consortium chairs.  Yeah, but Klingon, right?
-    # Damn hobby linguists.
     'r' => "\x{1D63}",
     'u' => "\x{1D64}",
     'v' => "\x{1D65}",
+    # After years of swearing, I stumpled upon the 'j' subscript by
+    # accident.  It's been in the standard since Unicode 5.0!  Sorry.
+    # Now, I'll just need to stumble upon all those Greek subscripts,
+    # eh?
+    'j' => "\x{2C7C}",
+    # Greek
+    # TODO Not quite as simple: \beta -> β -> ᵦ would need a second
+    # transliteration run.
+    'β' => "\x{1D66}",
 );
 
 
