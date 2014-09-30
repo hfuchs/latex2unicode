@@ -60,8 +60,8 @@ my %good   = (
 # 2014-02-15, And the KG probability density.
 '\rho = \frac{i\hbar}{2m}\left(\psi^*\partial_t\psi - \psi\partial_t\psi^*\right)' =>
 "   iħ ⎛ *        *⎞\n".
-"ρ=╶──╴⎜ψ ∂ ψ-ψ∂ ψ ⎟\n".
-"   2m ⎝   t    t  ⎠",
+"ρ=╶──╴⎜ψ ∂ₜψ-ψ∂ₜψ ⎟\n".
+"   2m ⎝           ⎠",
 # 2014-02-15, Regression test for foot-head mixup in
 # process_superscript: invariance of the time evolution operator.
 '\left| u_\nu (\vec{r},t) \right|^2 = \left|e^{-iE_\nu t} \right|^2 \cdot \left| u_\nu (\vec{r},t) \right|^2= \left| u_\nu (\vec{r},0) \right|^2' =>
@@ -73,12 +73,12 @@ my %good   = (
 # 2014-02-22, A many-particle state vector in Slater determinant
 # representation.
 '\Psi (x_1,\ldots ,x_N) = \sum_L{ c_L \frac{1}{\sqrt{N}} \mathrm{det}\left|\left\langle x_j|\phi_{l_k}\right\rangle \right|_{(j,k)}}' =>
-"           ⎽⎽⎽⎽         │          │     \n".
+"           ⎽⎽⎽⎽                          \n".
 "           ╲       1    │ ╱      ╲ │     \n".
-"Ψ(x₁,…,x )= ⟩  c ╶──╴det│⟨ x |ϕ   ⟩│     \n".
-"        N  ╱    L √N̅    │ ╲ j  l ╱ │     \n".
-"           ⎺⎺⎺⎺         │       k  │     \n".
-"             L                      (j,k)",
+"Ψ(x₁,…,x )= ⟩  c ╶──╴det│⟨ xⱼ|ϕ   ⟩│     \n".
+"        N  ╱    L √N̅    │ ╲    lₖ╱ │     \n".
+"           ⎺⎺⎺⎺                     (j,k)\n".
+"             L                           ",
 
 );
 

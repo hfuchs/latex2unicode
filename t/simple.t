@@ -24,9 +24,7 @@ my %good   = (
     '1∗2□∉⟨f∣⋅⨯↦∗⨯ℑℜ⟩⟂',
     # 2014-02-15, Remember, *sigh*, that's why I'm testing: if I can't
     # *see* the characters, it simply means my font sucks.
-    '\partial_t' =>
-"∂ \n".
-" t",
+    '\partial_t' => "∂ₜ",
 );
 
 while (my ($in, $out) = each %good) {
