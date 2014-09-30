@@ -10,6 +10,8 @@ use Encode;
 #use Data::Dumper;
 use POSIX qw(floor);
 use List::Util qw/max/;
+use Getopt::Long;
+use File::Slurp;
 
 # This one's rather obscure, sadly enough.  TODO Replace by \X magic?
 use Unicode::GCString;
@@ -24,19 +26,20 @@ use L2U::Handlers;
 my $DEBUG     = 1 if $ENV{DEBUG};
 my $MATHMODE  = undef;
 my $TEXTWIDTH = 72;
+my $FILE      = undef;
 
 # -- Main
 # ----------------------------------------------------------------------
 
 # Remove options from ARGV, then read the input string.
-# TODO Read from file!
-use Getopt::Long;
-GetOptions('debug'        => \$DEBUG,
-           'math'         => \$MATHMODE,
-           'textwidth:i'  => \$TEXTWIDTH,
-       );
+GetOptions(
+    'debug'        => \$DEBUG,
+    'math'         => \$MATHMODE,
+    'textwidth:i'  => \$TEXTWIDTH,
+    'file:s'       => \$FILE,
+);
 
-my $input = decode_utf8 join ' ', @ARGV;
+my $input = $FILE ? read_file($FILE) : decode_utf8 join ' ', @ARGV;
 
 # This is it.  That's latex2unicode, ladies'n'gentlemen.
 pretty_print(expand(massage_input($input)));
@@ -657,6 +660,7 @@ sub normalize_math {
     #$in =~ s|\\([a-z*]+)\s+|\\$1\{\}|g; # TODO Superfluous now?
     $in =~ s|\\([;:!,])|\\$1\{\}|g;      # TODO Top-off-my-head character list.
     $in =~ s/\s{1,}//g;
+    #$in =~ s/([=+])/ $1 /g;             # TODO Provide wide-math-op switch?
 
     D(">     ...             [" . $in . "]");
 
